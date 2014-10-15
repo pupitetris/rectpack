@@ -19,6 +19,8 @@
 
 #include "DomDecorator.h"
 
+#include <cstddef>
+
 DomDecorator::DomDecorator() :
   m_pT1(NULL),
   m_pT2(NULL) {

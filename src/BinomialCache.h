@@ -20,6 +20,7 @@
 #ifndef BINOMIALCACHE_H
 #define BINOMIALCACHE_H
 
+#include <cstddef>
 #include <map>
 
 class BinomialCache : public std::map<std::pair<size_t, size_t>, size_t> {

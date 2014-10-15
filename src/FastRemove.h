@@ -20,6 +20,7 @@
 #ifndef FASTREMOVE_H
 #define FASTREMOVE_H
 
+#include <cstddef>
 #include <limits>
 #include <vector>
 

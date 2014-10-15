@@ -21,6 +21,7 @@
 #define SINGLESTACK_H
 
 #include <deque>
+#include <cstddef>
 
 class CompulsoryAssign;
 

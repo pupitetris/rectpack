@@ -21,6 +21,7 @@
 #define MUTEXMAP_H
 
 #include <map>
+#include <cstddef>
 
 class Rectangle;
 

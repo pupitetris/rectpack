@@ -17,7 +17,7 @@
 ##
 
 EXECUTABLE  = rectpack
-COMMONFLAGS = -Wall -Wno-parentheses -Wno-deprecated -march=native \
+COMMONFLAGS = -Wall -Wno-parentheses -Wno-deprecated -fpermissive -march=native \
      -msse -msse2
 
 # This addition to COMMONFLAGS pertains to linking to GTK libraries
@@ -29,6 +29,7 @@ RELFLAGS    = -O3 -pipe -DNDEBUG -momit-leaf-frame-pointer
 PROFFLAGS   = -pg -ggdb3 -pipe -O3
 VIZCFLAGS   = -DVIZ
 LIBFLAGS    = \
+    -lboost_system \
     -lboost_thread \
     -lboost_program_options \
     -lgmp \

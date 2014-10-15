@@ -22,6 +22,7 @@
 
 #include "GreaterMinDim.h"
 #include <set>
+#include <cstddef>
 
 class Rectangle;
 
