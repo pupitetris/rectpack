@@ -1,0 +1,159 @@
+##
+## Copyright (C) 2010 Eric Huang
+##  
+## This program is free software: you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation, either version 3 of the
+## License, or (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see
+## <http://www.gnu.org/licenses/>.
+##
+
+SRC = \
+    AsciiGrid.cc \
+    AlignedComponents.cc \
+    AlignedComponentPtrs.cc \
+    AlignedCongruencies.cc \
+    AnytimeBoxes.cc \
+    APSP.cc \
+    Assignment.cc \
+    Attempt.cc \
+    BacktrackSums.cc \
+    BinomialCache.cc \
+    BinsBase.cc \
+    BinsViz.cc \
+    BoundingBoxes.cc \
+    BoxDimensions.cc \
+    BoxSpec.cc \
+    BranchDesc.cc \
+    BranchingFactor.cc \
+    Color.cc \
+    Component.cc \
+    ComponentPtrs.cc \
+    CompressionEntry.cc \
+    CompressionStack.cc \
+    Compulsory.cc \
+    CompulsoryAssign.cc \
+    ConflictBT.cc \
+    ConflictSums.cc \
+    Control.cc \
+    CoordinateRanges.cc \
+    Coordinates.cc \
+    CornerValues.cc \
+    CornerVariables.cc \
+    CorrectedIjcai.cc \
+    Cumulative.cc \
+    Dimensions.cc \
+    DimsFunctor.cc \
+    DimsGreater.cc \
+    Domains.cc \
+    DomDecorator.cc \
+    Domination.cc \
+    Duplicate.cc \
+    DuplicateIndex.cc \
+    DynamicEmpty.cc \
+    DynamicSums.cc \
+    EmptyCorner.cc \
+    EmptyDom.cc \
+    EmptySpace.cc \
+    ErrorInfo.cc \
+    Fixed.cc \
+    Globals.cc \
+    GreaterCuSP.cc \
+    GreaterMinDim.cc \
+    GreaterHeight.cc \
+    GreaterWidth.cc \
+    Grid.cc \
+    GridViz.cc \
+    HeapBox.cc \
+    HeightFirst.cc \
+    HeightFirstPlacement.cc \
+    HeightWidth.cc \
+    ICoords.cc \
+    Inferences.cc \
+    Instance.cc \
+    IntBalOpt.cc \
+    Interval.cc \
+    IntPack.cc \
+    IntPlacement.cc \
+    IntPlacements.cc \
+    Label.cc \
+    LessHeight.cc \
+    LessMinDim.cc \
+    LessRatioHW.cc \
+    LessRatioWH.cc \
+    LockableState.cc \
+    LogState.cc \
+    main.cc \
+    MainBase.cc \
+    MainViz.cc \
+    MetaCSP.cc \
+    MetaDomain.cc \
+    MetaFrame.cc \
+    MetaVarDesc.cc \
+    MetaVariable.cc \
+    MpqWrapper.cc \
+    MpzWrapper.cc \
+    MutexMap.cc \
+    NewCornerValues.cc \
+    NewCornerVariables.cc \
+    NodeBase.cc \
+    NodeStatus.cc \
+    OrderedCuSP.cc \
+    Packer.cc \
+    PackingCache.cc \
+    PackingCacheKey.cc \
+    ParallelBoxes.cc \
+    Parameters.cc \
+    Perfect.cc \
+    PerfectTransform.cc \
+    Performance.cc \
+    Placement.cc \
+    PlacementDec.cc \
+    Placements.cc \
+    PrecomputedSums.cc \
+    Printer.cc \
+    PriorityQ.cc \
+    Range.cc \
+    RatDims.cc \
+    RatPack.cc \
+    RDimensions.cc \
+    Rectangle.cc \
+    RectArray.cc \
+    RectDecArray.cc \
+    RectDecDeq.cc \
+    RectDecorator.cc \
+    RectDomains.cc \
+    RectPtrArray.cc \
+    RectSetMinDim.cc \
+    RefHeight.cc \
+    RInterval.cc \
+    SearchControl.cc \
+    Solution.cc \
+    SpaceFill.cc \
+    SquareDom.cc \
+    SquarePacker.cc \
+    SimpleSums.cc \
+    SingleStack.cc \
+    SubsetSums.cc \
+    SubsetSumsSet.cc \
+    SymKey.cc \
+    SymmetryMap.cc \
+    TimeSpec.cc \
+    UnitEmpty.cc \
+    UpperDistance.cc \
+    URectDom.cc \
+    ValueStack.cc \
+    VizDrawing.cc \
+    VizWindow.cc \
+    WastedBins.cc \
+    WidthFirst.cc \
+    WidthFirstPlacement.cc \
+    WidthHeight.cc
