@@ -140,7 +140,7 @@ sub main {
     my ($cuboids, $power) = process_input ($fd);
     my $cuboids_arg = cuboids_to_arg ($cuboids, $power);
 
-    my $cmd = "$rectpack --benchmark 0 --instance $cuboids_arg $verbose --threads $threads --unoriented";
+    my $cmd = "$rectpack --benchmark 0 --instance $cuboids_arg $verbose --threads $threads --unoriented -w 5";
     open (my $pipe, "$cmd|") or die "Error: Can't run retpack command:\n$cmd\n$!";
     while (my $l = <$pipe>) {
 	print $l;
