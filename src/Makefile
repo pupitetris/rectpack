@@ -43,7 +43,7 @@ VPATH=.
 # To make "debug" the default (if invoked with just "make"):
 #
 ifeq ($(MAKECMDGOALS),)
-MAKECMDGOALS=debug
+MAKECMDGOALS=release
 endif
 
 # The source files: regardless of where they reside in 
