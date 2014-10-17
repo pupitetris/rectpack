@@ -26,7 +26,7 @@
 # requirements.
 
 # Configuration
-my $DIMS = 2; # 2 - rectangles, 3 - cuboids.
+my $DIMS = 3; # 2 - rectangles, 3 - cuboids.
 my $THREADS = 4; # Note: threads are ignored if running on Cygwin.
 my $DEBUG = 0; # Copies rectpack output to stderr for analysis.
 
@@ -77,7 +77,7 @@ sub process_input {
     my $itemhash = {};
     while (my $line = <$fd>) {
 	if ($line !~ /^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/) {
-	    go_die ();
+	    go_die;
 	}
 	my ($id, $length, $width, $height) = ($1, $2 + 0, $3 + 0, $4 + 0);
 
@@ -207,9 +207,10 @@ sub items_to_arg {
     foreach my $i (@$items) {
 	my @dims = @{$i->{'DIMS'}}[0 .. $DIMS - 1];
 
-	# rectpack handles integer dimensions better, so we move the
-	# decimal point by the max number of decimal places found
-	# among dimensions.
+	# rectpack handles integer dimensions better (the
+	# discretization routine for "real" numbers seems broken), so
+	# we move the decimal point by the max number of decimal
+	# places found among dimensions.
 	$arg .= join ('x', map { $_ *= $power } @dims) . ',';
     }
     chop $arg;
@@ -255,6 +256,7 @@ sub main {
     my @box;
     open (my $pipe, "$cmd|") or die "Error: Can't run rectpack command:\n$cmd\n$!";
 
+    my $captured = 0;
     # Consume the output data we need from the verbose output:
     while (my $l = <$pipe>) {
 	print STDERR $l if $DEBUG;
@@ -262,12 +264,15 @@ sub main {
 	if ($l =~ /Rectangles were placed/) {
 	    # The geometry of the optimum placements:
 	    capture_result ($pipe, $itemhash, $power);
+	    $captured = 1;
 	} elsif ($l =~ /Optimal Solutions : (.*)/) {
 	    # The dimensions of the smallest shipping box:
 	    @box = map { $_ /= $power } split (/x/, $1);
 	}
     }
     close $fd;
+
+    go_die if !$captured;
 
     process_output ($items, $id_len, \@box);
 }
