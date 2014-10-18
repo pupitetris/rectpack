@@ -40,7 +40,7 @@ class RDimensions {
   RDimensions(const Dimensions& d);
   RDimensions(const RDimensions& d);
   RDimensions(const BoxDimensions& b);
-  RDimensions(URational nWidth, URational nHeight);
+  RDimensions(URational nWidth, URational nHeight, URational nLength);
   RDimensions(const Component* c);
   ~RDimensions();
   void initMax();
@@ -48,7 +48,8 @@ class RDimensions {
   void print(std::ostream& os) const;
   void print() const;
   bool canFit(const URational& nWidth,
-	      const URational& nHeight) const;
+	      const URational& nHeight,
+	      const URational& nLength) const;
   bool square() const;
   bool unit() const;
   const RDimensions& operator=(const RDimensions& d);
@@ -80,11 +81,14 @@ class RDimensions {
    */
 
   bool rotatable(bool bUnoriented) const;
-  void rotate();
+  void rotateL(); // Rotate on z axis
+  void rotateW(); // Rotate on x axis
+  void rotateH(); // Rotate on y axis
   void relax();
   void setArea();
-  URational ratiowh() const;
-  URational ratiohw() const;
+  URational ratiowhl() const;
+  URational ratiohwl() const;
+  URational ratiolhw() const;
   const URational& maxDim() const;
   
   /**
@@ -121,6 +125,7 @@ class RDimensions {
   Orientation m_nOrientation;
   URational m_nWidth;
   URational m_nHeight;
+  URational m_nLength;
   URational m_nMinDim;
   URational m_nArea;
 };
