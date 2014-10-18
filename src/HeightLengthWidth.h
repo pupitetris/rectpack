@@ -17,8 +17,8 @@
  * along with rectpack. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDTHHEIGHT_H
-#define WIDTHHEIGHT_H
+#ifndef HEIGHTLENGTHWIDTH_H
+#define HEIGHTLENGTHWIDTH_H
 
 #include "DimsFunctor.h"
 #include "Integer.h"
@@ -27,23 +27,27 @@
 class RDimensions;
 class Rectangle;
 
-class WidthHeight : public DimsFunctor {
+class HeightLengthWidth : public DimsFunctor {
  public:
-  WidthHeight();
-  virtual ~WidthHeight();
+  HeightLengthWidth();
+  virtual ~HeightLengthWidth();
 
   virtual const UInt& d1(const Rectangle* r) const;
   virtual const UInt& d1(const Rectangle& r) const;
   virtual const UInt& d2(const Rectangle* r) const;
   virtual const UInt& d2(const Rectangle& r) const;
+  virtual const UInt& d3(const Rectangle* r) const;
+  virtual const UInt& d3(const Rectangle& r) const;
 
   virtual const URational& d1(const RDimensions* r) const;
   virtual const URational& d1(const RDimensions& r) const;
   virtual const URational& d2(const RDimensions* r) const;
   virtual const URational& d2(const RDimensions& r) const;
+  virtual const URational& d3(const RDimensions* r) const;
+  virtual const URational& d3(const RDimensions& r) const;
 
-  virtual DimsFunctor* reverse() const;
+  virtual DimsFunctor* rotate() const;
   virtual DimsFunctor* clone() const;
 };
 
-#endif // WIDTHHEIGHT_H
+#endif // HEIGHTLENGTHWIDTH_H

@@ -25,7 +25,7 @@ DimsFunctor::DimsFunctor() {
 DimsFunctor::~DimsFunctor() {
 }
 
-DimsFunctor* DimsFunctor::reverse() const {
+DimsFunctor* DimsFunctor::rotate() const {
   return(NULL);
 }
 

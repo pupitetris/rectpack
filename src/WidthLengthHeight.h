@@ -17,37 +17,37 @@
  * along with rectpack. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIMSFUNCTOR_H
-#define DIMSFUNCTOR_H
+#ifndef WIDTHLENGTHHEIGHT_H
+#define WIDTHLENGTHHEIGHT_H
 
+#include "DimsFunctor.h"
 #include "Integer.h"
 #include "Rational.h"
 
-class DimsFunctor;
 class RDimensions;
 class Rectangle;
 
-class DimsFunctor {
+class WidthLengthHeight : public DimsFunctor {
  public:
-  DimsFunctor();
-  virtual ~DimsFunctor();
+  WidthLengthHeight();
+  virtual ~WidthLengthHeight();
 
-  virtual const UInt& d1(const Rectangle* r) const = 0;
-  virtual const UInt& d1(const Rectangle& r) const = 0;
-  virtual const UInt& d2(const Rectangle* r) const = 0;
-  virtual const UInt& d2(const Rectangle& r) const = 0;
-  virtual const UInt& d3(const Rectangle* r) const = 0;
-  virtual const UInt& d3(const Rectangle& r) const = 0;
+  virtual const UInt& d1(const Rectangle* r) const;
+  virtual const UInt& d1(const Rectangle& r) const;
+  virtual const UInt& d2(const Rectangle* r) const;
+  virtual const UInt& d2(const Rectangle& r) const;
+  virtual const UInt& d3(const Rectangle* r) const;
+  virtual const UInt& d3(const Rectangle& r) const;
 
-  virtual const URational& d1(const RDimensions* r) const = 0;
-  virtual const URational& d1(const RDimensions& r) const = 0;
-  virtual const URational& d2(const RDimensions* r) const = 0;
-  virtual const URational& d2(const RDimensions& r) const = 0;
-  virtual const URational& d3(const RDimensions* r) const = 0;
-  virtual const URational& d3(const RDimensions& r) const = 0;
-  
+  virtual const URational& d1(const RDimensions* r) const;
+  virtual const URational& d1(const RDimensions& r) const;
+  virtual const URational& d2(const RDimensions* r) const;
+  virtual const URational& d2(const RDimensions& r) const;
+  virtual const URational& d3(const RDimensions* r) const;
+  virtual const URational& d3(const RDimensions& r) const;
+
   virtual DimsFunctor* rotate() const;
   virtual DimsFunctor* clone() const;
 };
 
-#endif // DIMSFUNCTOR_H
+#endif // WIDTHHEIGHTLENGTH_H
