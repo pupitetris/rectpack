@@ -25,6 +25,7 @@
 #include "Rational.h"
 #include "RDimensions.h"
 #include "Rectangle.h"
+#include "WidthHeightLength.h"
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -33,8 +34,8 @@ Rectangle::Rectangle() :
   m_bRotated(false),
   m_bRotatable(true),
   m_bSquare(false),
-  m_bFixed(false),
-  m_pRotation(NULL) {
+  m_pRotation(NULL),
+  m_bFixed(false) {
 }
 
 Rectangle::~Rectangle() {
@@ -50,8 +51,8 @@ void Rectangle::initialize(const UInt& nWidth, const UInt& nHeight, const UInt& 
   m_nHeight = nHeight;
   m_nLength = nLength;
   m_nArea = m_nWidth * m_nHeight * m_nLength;
-  m_nMinDim = std::min(nWidth, nHeight, nLength);
-  m_nMaxDim = std::max(nWidth, nHeight, nLength);
+  m_nMinDim = std::min(nWidth, std::min (nHeight, nLength));
+  m_nMaxDim = std::max(nWidth, std::max (nHeight, nLength));
   m_bSquare = (m_nWidth == m_nHeight && m_nWidth == m_nLength);
   if(m_bSquare) m_bRotatable = false;
   m_pRotation = new WidthHeightLength (); // Initial rotation is a 1:1 mapping.
@@ -237,7 +238,7 @@ bool Rectangle::overlaps(const Rectangle* r) const {
   return(!((x + m_nWidth) <= r->x ||
 	   (r->x + r->m_nWidth) <= x ||
 	   (y + m_nHeight) <= r->y ||
-	   (r->y + r->m_nHeight) <= y) ||
+	   (r->y + r->m_nHeight) <= y ||
 	   (z + m_nLength) <= r->z ||
 	   (r->z + r->m_nLength) <= z));
 }
@@ -280,17 +281,17 @@ void Rectangle::rotate() {
 }
 
 void Rectangle::rotateTall() {
-  while (std::max (m_nWidth, m_nHeight, m_nLength) != m_nHeight)
+  while (std::max (m_nWidth, std::max (m_nHeight, m_nLength)) != m_nHeight)
     rotate();
 }
 
 void Rectangle::rotateWide() {
-  while (std::max (m_nWidth, m_nHeight, m_nLength) != m_nWidth)
+  while (std::max (m_nWidth, std::max (m_nHeight, m_nLength)) != m_nWidth)
     rotate();
 }
 
 void Rectangle::rotateLong() {
-  while (std::max (m_nWidth, m_nHeight, m_nLength) != m_nLength)
+  while (std::max (m_nWidth, std::max (m_nHeight, m_nLength)) != m_nLength)
     rotate();
 }
 
@@ -446,19 +447,22 @@ UInt Rectangle::minDim2(const UInt& nMax,
 			const Rectangle* pRect) const {
   UInt nMin (std::numeric_limits<UInt>::max());
 
+  Rectangle rect = *pRect;    // copies
+  Rectangle thisRect = *this;
+
   int i, j;
   for (i = 0; i < NUM_ROTATIONS; i++) {
     for (j = 0; j < NUM_ROTATIONS; j++) {
-      nMin = std::min(nMin, pDims->d2(this) + pDims->d2(pRect));
-      if(pDims->d1(this) + pDims->d1(pRect) <= nMax)
-	nMin = std::min(nMin, std::max(pDims->d2(this), pDims->d2(pRect)));
-      if(!pRect->m_bRotatable)
+      nMin = std::min(nMin, pDims->d2(thisRect) + pDims->d2(rect));
+      if(pDims->d1(thisRect) + pDims->d1(rect) <= nMax)
+	nMin = std::min(nMin, std::max(pDims->d2(thisRect), pDims->d2(rect)));
+      if(!rect.m_bRotatable)
 	break;
-      pRect->rotate();
+      rect.rotate();
     }
     if(!m_bRotatable)
       break;
-    rotate();
+    thisRect.rotate();
   }
 
   return(nMin);
@@ -469,19 +473,22 @@ UInt Rectangle::minDim3(const UInt& nMax,
 			const Rectangle* pRect) const {
   UInt nMin (std::numeric_limits<UInt>::max());
 
+  Rectangle rect = *pRect;    // copies
+  Rectangle thisRect = *this;
+
   int i, j;
   for (i = 0; i < NUM_ROTATIONS; i++) {
     for (j = 0; j < NUM_ROTATIONS; j++) {
-      nMin = std::min(nMin, pDims->d3(this) + pDims->d3(pRect));
-      if(pDims->d1(this) + pDims->d1(pRect) <= nMax)
-	nMin = std::min(nMin, std::max(pDims->d3(this), pDims->d3(pRect)));
-      if(!pRect->m_bRotatable)
+      nMin = std::min(nMin, pDims->d3(thisRect) + pDims->d3(rect));
+      if(pDims->d1(thisRect) + pDims->d1(rect) <= nMax)
+	nMin = std::min(nMin, std::max(pDims->d3(thisRect), pDims->d3(rect)));
+      if(!rect.m_bRotatable)
 	break;
-      pRect->rotate();
+      rect.rotate();
     }
     if(!m_bRotatable)
       break;
-    rotate();
+    thisRect.rotate();
   }
 
   return(nMin);
