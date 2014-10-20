@@ -33,52 +33,54 @@ Rectangle::Rectangle() :
   m_bRotated(false),
   m_bRotatable(true),
   m_bSquare(false),
-  m_bFixed(false) {
+  m_bFixed(false),
+  m_pRotation(NULL) {
 }
 
 Rectangle::~Rectangle() {
+  delete m_pRotation;
 }
 
 void Rectangle::initialize(const UInt& nSize) {
-  initialize(nSize, nSize);
+  initialize(nSize, nSize, nSize);
 }
 
-void Rectangle::initialize(const UInt& nWidth, const UInt& nHeight) {
+void Rectangle::initialize(const UInt& nWidth, const UInt& nHeight, const UInt& nLength) {
   m_nWidth = nWidth;
   m_nHeight = nHeight;
-  m_nArea = m_nWidth * m_nHeight;
-  m_nMinDim = std::min(nWidth, nHeight);
-  m_nMaxDim = std::max(nWidth, nHeight);
-  m_bSquare = (m_nWidth == m_nHeight);
+  m_nLength = nLength;
+  m_nArea = m_nWidth * m_nHeight * m_nLength;
+  m_nMinDim = std::min(nWidth, nHeight, nLength);
+  m_nMaxDim = std::max(nWidth, nHeight, nLength);
+  m_bSquare = (m_nWidth == m_nHeight && m_nWidth == m_nLength);
   if(m_bSquare) m_bRotatable = false;
+  m_pRotation = new WidthHeightLength (); // Initial rotation is a 1:1 mapping.
 }
 
 void Rectangle::initialize(const RDimensions& d) {
   if(d.m_nOrientation == RDimensions::ORIENTED)
     m_bRotatable = false;
-  if(d.m_nWidth.integer() && d.m_nHeight.integer())
-    initialize(d.m_nWidth.get_ui(), d.m_nHeight.get_ui());
+  if(d.m_nWidth.integer() && d.m_nHeight.integer() && d.m_nLength.integer())
+    initialize(d.m_nWidth.get_ui(), d.m_nHeight.get_ui(), d.m_nLength.get_ui());
   else
     std::cout << "Rectangle::size(...): Dimensions should be integers." << std::endl;
   m_bRotated = false;
 }
 
 void Rectangle::print() const {
-  if(m_bRotated) printHW();
-  else printWH();
-}
-
-void Rectangle::printWH() const {
-  std::cout << m_nWidth << "x" << m_nHeight << std::flush;
-}
-
-void Rectangle::printHW() const {
-  std::cout << m_nHeight << "x" << m_nWidth << std::flush;
+  if (m_bRotated)
+    std::cout << m_nWidth << "x" << m_nHeight << m_nLength << std::flush;
+  else
+    std::cout << m_pRotation->d1(this) <<  m_pRotation->d2(this) <<  m_pRotation->d3(this) << std::flush;
 }
 
 void Rectangle::printNoLocation() const {
-  std::cout << std::setw(2) << m_nID << ":" << std::setw(2)
-	    << m_nWidth << "x" << std::setw(2) << m_nHeight;
+  if (m_bRotated)
+    std::cout << std::setw(2) << m_nID << ":" << std::setw(2)
+	      << m_pRotation->d1(this) << "x" << std::setw(2) << m_pRotation->d2(this) << "x" << std::setw(2) << m_pRotation->d3(this);
+  else
+    std::cout << std::setw(2) << m_nID << ":" << std::setw(2)
+	      << m_nWidth << "x" << std::setw(2) << m_nHeight << "x" << std::setw(2) << m_nLength;
 }
 
 int Rectangle::nextX() const {
@@ -89,25 +91,49 @@ int Rectangle::nextY() const {
   return(y + m_nHeight);
 }
 
+int Rectangle::nextZ() const {
+  return(z + m_nLength);
+}
+
 bool Rectangle::skippingX(const Grid* pGrid) {
   const Rectangle* r;
-  if(pGrid->occupied(x, y)) {
-    r = pGrid->rect(x, y);
+  if(pGrid->occupied(x, y, z)) {
+    r = pGrid->rect(x, y, z);
     x = r->x + r->m_nWidth - 1;
     return(true);
   }
-  else if(pGrid->occupied(x + m_nWidth - 1, y)) {
-    r = pGrid->rect(x + m_nWidth - 1, y);
+  else if(pGrid->occupied(x + m_nWidth - 1, y, z)) {
+    r = pGrid->rect(x + m_nWidth - 1, y, z);
     x = r->x + r->m_nWidth - 1;
     return(true);
   }
-  else if(pGrid->occupied(x, y + m_nHeight - 1)) {
-    r = pGrid->rect(x, y + m_nHeight - 1);
+  else if(pGrid->occupied(x, y + m_nHeight - 1, z)) {
+    r = pGrid->rect(x, y + m_nHeight - 1, z);
     x = r->x + r->m_nWidth - 1;
     return(true);
   }
-  else if(pGrid->occupied(x + m_nWidth - 1, y + m_nHeight - 1)) {
-    r = pGrid->rect(x + m_nWidth - 1, y + m_nHeight - 1);
+  else if(pGrid->occupied(x + m_nWidth - 1, y + m_nHeight - 1, z)) {
+    r = pGrid->rect(x + m_nWidth - 1, y + m_nHeight - 1, z);
+    x = r->x + r->m_nWidth - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x, y, z + m_nLength - 1)) {
+    r = pGrid->rect(x, y, z + m_nLength - 1);
+    x = r->x + r->m_nWidth - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x + m_nWidth - 1, y, z + m_nLength - 1)) {
+    r = pGrid->rect(x + m_nWidth - 1, y, z + m_nLength - 1);
+    x = r->x + r->m_nWidth - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x, y + m_nHeight - 1, z + m_nLength - 1)) {
+    r = pGrid->rect(x, y + m_nHeight - 1, z + m_nLength - 1);
+    x = r->x + r->m_nWidth - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x + m_nWidth - 1, y + m_nHeight - 1, z + m_nLength - 1)) {
+    r = pGrid->rect(x + m_nWidth - 1, y + m_nHeight - 1, z + m_nLength - 1);
     x = r->x + r->m_nWidth - 1;
     return(true);
   }
@@ -117,24 +143,90 @@ bool Rectangle::skippingX(const Grid* pGrid) {
 
 bool Rectangle::skippingY(const Grid* pGrid) {
   const Rectangle* r;
-  if(pGrid->occupied(x, y)) {
-    r = pGrid->rect(x, y);
+  if(pGrid->occupied(x, y, z)) {
+    r = pGrid->rect(x, y, z);
     y = r->y + r->m_nHeight - 1;
     return(true);
   }
-  else if(pGrid->occupied(x + m_nWidth - 1, y)) {
-    r = pGrid->rect(x + m_nWidth - 1, y);
+  else if(pGrid->occupied(x + m_nWidth - 1, y, z)) {
+    r = pGrid->rect(x + m_nWidth - 1, y, z);
     y = r->y + r->m_nHeight - 1;
     return(true);
   }
-  else if(pGrid->occupied(x, y + m_nHeight - 1)) {
-    r = pGrid->rect(x, y + m_nHeight - 1);
+  else if(pGrid->occupied(x, y + m_nHeight - 1, z)) {
+    r = pGrid->rect(x, y + m_nHeight - 1, z);
     y = r->y + r->m_nHeight - 1;
     return(true);
   }
-  else if(pGrid->occupied(x + m_nWidth - 1, y + m_nHeight - 1)) {
-    r = pGrid->rect(x + m_nWidth - 1, y + m_nHeight - 1);
+  else if(pGrid->occupied(x + m_nWidth - 1, y + m_nHeight - 1, z)) {
+    r = pGrid->rect(x + m_nWidth - 1, y + m_nHeight - 1, z);
     y = r->y + r->m_nHeight - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x, y, z + m_nLength - 1)) {
+    r = pGrid->rect(x, y, z + m_nLength - 1);
+    y = r->y + r->m_nHeight - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x + m_nWidth - 1, y, z + m_nLength - 1)) {
+    r = pGrid->rect(x + m_nWidth - 1, y, z + m_nLength - 1);
+    y = r->y + r->m_nHeight - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x, y + m_nHeight - 1, z + m_nLength - 1)) {
+    r = pGrid->rect(x, y + m_nHeight - 1, z + m_nLength - 1);
+    y = r->y + r->m_nHeight - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x + m_nWidth - 1, y + m_nHeight - 1, z + m_nLength - 1)) {
+    r = pGrid->rect(x + m_nWidth - 1, y + m_nHeight - 1, z + m_nLength - 1);
+    y = r->y + r->m_nHeight - 1;
+    return(true);
+  }
+  else
+    return(false);
+}
+
+bool Rectangle::skippingZ(const Grid* pGrid) {
+  const Rectangle* r;
+  if(pGrid->occupied(x, y, z)) {
+    r = pGrid->rect(x, y, z);
+    z = r->z + r->m_nLength - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x + m_nWidth - 1, y, z)) {
+    r = pGrid->rect(x + m_nWidth - 1, y, z);
+    z = r->z + r->m_nLength - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x, y + m_nHeight - 1, z)) {
+    r = pGrid->rect(x, y + m_nHeight - 1, z);
+    z = r->z + r->m_nLength - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x + m_nWidth - 1, y + m_nHeight - 1, z)) {
+    r = pGrid->rect(x + m_nWidth - 1, y + m_nHeight - 1, z);
+    z = r->z + r->m_nLength - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x, y, z + m_nLength - 1)) {
+    r = pGrid->rect(x, y, z + m_nLength - 1);
+    z = r->z + r->m_nLength - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x + m_nWidth - 1, y, z + m_nLength - 1)) {
+    r = pGrid->rect(x + m_nWidth - 1, y, z + m_nLength - 1);
+    z = r->z + r->m_nLength - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x, y + m_nHeight - 1, z + m_nLength - 1)) {
+    r = pGrid->rect(x, y + m_nHeight - 1, z + m_nLength - 1);
+    z = r->z + r->m_nLength - 1;
+    return(true);
+  }
+  else if(pGrid->occupied(x + m_nWidth - 1, y + m_nHeight - 1, z + m_nLength - 1)) {
+    r = pGrid->rect(x + m_nWidth - 1, y + m_nHeight - 1, z + m_nLength - 1);
+    z = r->z + r->m_nLength - 1;
     return(true);
   }
   else
@@ -145,7 +237,9 @@ bool Rectangle::overlaps(const Rectangle* r) const {
   return(!((x + m_nWidth) <= r->x ||
 	   (r->x + r->m_nWidth) <= x ||
 	   (y + m_nHeight) <= r->y ||
-	   (r->y + r->m_nHeight) <= y));
+	   (r->y + r->m_nHeight) <= y) ||
+	   (z + m_nLength) <= r->z ||
+	   (r->z + r->m_nLength) <= z));
 }
 
 bool Rectangle::fixed() const {
@@ -155,77 +249,124 @@ bool Rectangle::fixed() const {
 void Rectangle::fix(const Coordinates& c) {
   m_nFixX = c.x.get_ui();
   m_nFixY = c.y.get_ui();
+  m_nFixZ = c.z.get_ui();
   m_bFixed = true;
 }
 
 void Rectangle::fix(const Fixed& f) {
   m_nFixX = f.m_nX;
   m_nFixY = f.m_nY;
+  m_nFixZ = f.m_nZ;
   m_bFixed = true;
 }
 
 void Rectangle::rotate() {
-  std::swap(m_nWidth, m_nHeight);
-  m_bRotated = !m_bRotated;
+  DimsFunctor *pRotator, *pTmpRotation;
+  UInt height, length;
+  
+  pRotator = m_pRotation->rotator ();
+  length = pRotator->d3(this);
+  height = pRotator->d2(this);
+  m_nWidth = pRotator->d1(this);
+  m_nHeight = height;
+  m_nLength = length;
+  delete pRotator;
+
+  pTmpRotation = m_pRotation->rotate ();
+  delete m_pRotation;
+  m_pRotation = pTmpRotation;
+
+  m_bRotated = m_pRotation->isRotated ();
 }
 
 void Rectangle::rotateTall() {
-  if(m_nWidth > m_nHeight)
+  while (std::max (m_nWidth, m_nHeight, m_nLength) != m_nHeight)
     rotate();
 }
 
 void Rectangle::rotateWide() {
-  if(m_nHeight > m_nWidth)
+  while (std::max (m_nWidth, m_nHeight, m_nLength) != m_nWidth)
+    rotate();
+}
+
+void Rectangle::rotateLong() {
+  while (std::max (m_nWidth, m_nHeight, m_nLength) != m_nLength)
     rotate();
 }
 
 bool Rectangle::equal(const Rectangle& r) const {
   return(m_nWidth == r.m_nWidth &&
-	 m_nHeight == r.m_nHeight);
+	 m_nHeight == r.m_nHeight &&
+	 m_nLength == r.m_nLength);
 }
 
 bool Rectangle::equal(const Rectangle* r) const {
   return(m_nWidth == r->m_nWidth &&
-	 m_nHeight == r->m_nHeight);
+	 m_nHeight == r->m_nHeight &&
+	 m_nLength == r->m_nLength);
 }
 
 bool Rectangle::uequal(const Rectangle& r) const {
   return(equal(r) ||
-	 (m_nWidth == r.m_nHeight &&
-	  m_nHeight == r.m_nWidth));
+	 ((m_nHeight == r.m_nWidth  && m_nWidth == r.m_nHeight && m_nLength == r.m_nLength) ||
+	  (m_nHeight == r.m_nWidth  && m_nWidth == r.m_nLength && m_nLength == r.m_nHeight) ||
+	  (m_nHeight == r.m_nHeight && m_nWidth == r.m_nWidth  && m_nLength == r.m_nLength) ||
+	  (m_nHeight == r.m_nLength && m_nWidth == r.m_nWidth  && m_nLength == r.m_nHeight) ||
+	  (m_nHeight == r.m_nHeight && m_nWidth == r.m_nLength && m_nLength == r.m_nWidth)  ||
+	  (m_nHeight == r.m_nLength && m_nWidth == r.m_nHeight && m_nLength == r.m_nWidth)));
 }
 
 bool Rectangle::uequal(const Rectangle* r) const {
   return(equal(r) ||
-	 (m_nWidth == r->m_nHeight &&
-	  m_nHeight == r->m_nWidth));
+	 ((m_nHeight == r->m_nWidth  && m_nWidth == r->m_nHeight && m_nLength == r->m_nLength) ||
+	  (m_nHeight == r->m_nWidth  && m_nWidth == r->m_nLength && m_nLength == r->m_nHeight) ||
+	  (m_nHeight == r->m_nHeight && m_nWidth == r->m_nWidth  && m_nLength == r->m_nLength) ||
+	  (m_nHeight == r->m_nLength && m_nWidth == r->m_nWidth  && m_nLength == r->m_nHeight) ||
+	  (m_nHeight == r->m_nHeight && m_nWidth == r->m_nLength && m_nLength == r->m_nWidth)  ||
+	  (m_nHeight == r->m_nLength && m_nWidth == r->m_nHeight && m_nLength == r->m_nWidth)));
 }
 
 void Rectangle::printTop() const {
-  std::cout << "(" << x << "," << y + m_nHeight << ")->("
-	    << x + m_nWidth << "," << y + m_nHeight << ")";
+  std::cout << "(" << x << "," << y + m_nHeight << "," << z << ")->("
+	    << x + m_nWidth << "," << y + m_nHeight << "," << z + m_nLength << ")";
 }
 
 void Rectangle::resetRotation() {
-  if(m_bRotated) rotate();
+  while(m_bRotated) rotate();
 }
 
 void Rectangle::constrainHeight(size_t nHeight) {
-  if(m_bRotatable && m_nHeight > nHeight)
-    rotate();
-  if(m_nWidth > nHeight || m_bSquare)
+  if (m_bRotatable) {
+    for (int i = 0; i < NUM_ROTATIONS && m_nHeight > nHeight; i++)
+      rotate();
+  }
+
+  if(m_nWidth > nHeight || m_nLength > nHeight || m_bSquare)
+    m_bRotatable = false;
+}
+
+void Rectangle::constrainLength(size_t nLength) {
+  if (m_bRotatable) {
+    for (int i = 0; i < NUM_ROTATIONS && m_nLength > nLength; i++)
+      rotate();
+  }
+
+  if(m_nWidth > nLength || m_nHeight > nLength || m_bSquare)
     m_bRotatable = false;
 }
 
 void Rectangle::constrain(const BoxDimensions& b) {
-  if(m_bRotatable && (m_nHeight > b.m_nHeight || m_nWidth > b.m_nWidth))
-    rotate();
-  if(m_nWidth > b.m_nHeight || m_nHeight > b.m_nWidth || m_bSquare)
+  if(m_bRotatable) {
+    for (int i = 0; i < NUM_ROTATIONS && (m_nHeight > b.m_nHeight || m_nWidth > b.m_nWidth || m_nLength > b.m_nLength); i++)
+      rotate();
+  }
+
+  if(m_nWidth > b.m_nHeight || m_nHeight > b.m_nWidth || m_nLength > b.m_nLength || m_bSquare)
     m_bRotatable = false;
 }
 
 std::ostream& operator<<(std::ostream& os, const Rectangle& r) {
-  return(os << r.m_nWidth << "x" << r.m_nHeight);
+  return(os << r.m_nWidth << "x" << r.m_nHeight << "x" << r.m_nLength);
 }
 
 bool Rectangle::rotatable() const {
@@ -246,8 +387,11 @@ const Rectangle& Rectangle::operator=(const Rectangle& src) {
   xi = src.xi;
   y = src.y;
   yi = src.yi;
+  z = src.z;
+  zi = src.zi;
   m_nWidth = src.m_nWidth;
   m_nHeight = src.m_nHeight;
+  m_nLength = src.m_nLength;
   m_nMinDim = src.m_nMinDim;
   m_nMaxDim = src.m_nMaxDim;
   m_nArea = src.m_nArea;
@@ -258,11 +402,13 @@ const Rectangle& Rectangle::operator=(const Rectangle& src) {
   m_bFixed = src.m_bFixed;
   m_nFixX = src.m_nFixX;
   m_nFixY = src.m_nFixY;
+  m_nFixZ = src.m_nFixZ;
   m_nScale = src.m_nScale;
   m_nRScale = src.m_nRScale;
   return(*this);
 }
 
+// pupitetris TODO: review this.
 void Rectangle::gutsyScale(const BoxDimensions& b) {
   scale().initialize(35, 100);
   size_t nValues = b.m_nHeight - m_nHeight + 1;
@@ -276,6 +422,8 @@ void Rectangle::gutsyScale(const BoxDimensions& b) {
 }
 
 void Rectangle::rescale(const URational& ur) {
+  m_nLength *= ur.get_num();
+  m_nLength /= ur.get_den();
   m_nHeight *= ur.get_num();
   m_nHeight /= ur.get_den();
   m_nWidth *= ur.get_num();
@@ -284,6 +432,8 @@ void Rectangle::rescale(const URational& ur) {
 }
 
 void Rectangle::unscale(const URational& ur) {
+  m_nLength *= ur.get_den();
+  m_nLength /= ur.get_num();
   m_nHeight *= ur.get_den();
   m_nHeight /= ur.get_num();
   m_nWidth *= ur.get_den();
@@ -291,28 +441,49 @@ void Rectangle::unscale(const URational& ur) {
   m_nArea = m_nHeight * m_nWidth;
 }
 
-UInt Rectangle::minDim(const UInt& nMax,
-		       const DimsFunctor* pDims,
-		       const Rectangle* pRect) const {
-  UInt nMin(pDims->d2(this) + pDims->d2(pRect));
-  if(pDims->d1(this) + pDims->d1(pRect) <= nMax)
-    nMin = std::min(nMin, std::max(pDims->d2(this), pDims->d2(pRect)));
-  if(pRect->m_bRotatable) {
-    nMin = std::min(nMin, pDims->d2(this) + pDims->d1(pRect));
-    if(pDims->d1(this) + pDims->d2(pRect) <= nMax)
-      nMin = std::min(nMin, std::max(pDims->d2(this), pDims->d1(pRect)));
+UInt Rectangle::minDim2(const UInt& nMax,
+			const DimsFunctor* pDims,
+			const Rectangle* pRect) const {
+  UInt nMin (std::numeric_limits<UInt>::max());
+
+  int i, j;
+  for (i = 0; i < NUM_ROTATIONS; i++) {
+    for (j = 0; j < NUM_ROTATIONS; j++) {
+      nMin = std::min(nMin, pDims->d2(this) + pDims->d2(pRect));
+      if(pDims->d1(this) + pDims->d1(pRect) <= nMax)
+	nMin = std::min(nMin, std::max(pDims->d2(this), pDims->d2(pRect)));
+      if(!pRect->m_bRotatable)
+	break;
+      pRect->rotate();
+    }
+    if(!m_bRotatable)
+      break;
+    rotate();
   }
 
-  if(m_bRotatable) {
-    nMin = std::min(nMin, pDims->d1(this) + pDims->d2(pRect));
-    if(pDims->d2(this) + pDims->d1(pRect) <= nMax)
-      nMin = std::min(nMin, std::max(pDims->d1(this), pDims->d2(pRect)));
-    if(pRect->m_bRotatable) {
-      nMin = std::min(nMin, pDims->d1(this) + pDims->d1(pRect));
-      if(pDims->d2(this) + pDims->d2(pRect) <= nMax)
-	nMin = std::min(nMin, std::max(pDims->d1(this), pDims->d1(pRect)));
+  return(nMin);
+}
+
+UInt Rectangle::minDim3(const UInt& nMax,
+			const DimsFunctor* pDims,
+			const Rectangle* pRect) const {
+  UInt nMin (std::numeric_limits<UInt>::max());
+
+  int i, j;
+  for (i = 0; i < NUM_ROTATIONS; i++) {
+    for (j = 0; j < NUM_ROTATIONS; j++) {
+      nMin = std::min(nMin, pDims->d3(this) + pDims->d3(pRect));
+      if(pDims->d1(this) + pDims->d1(pRect) <= nMax)
+	nMin = std::min(nMin, std::max(pDims->d3(this), pDims->d3(pRect)));
+      if(!pRect->m_bRotatable)
+	break;
+      pRect->rotate();
     }
+    if(!m_bRotatable)
+      break;
+    rotate();
   }
+
   return(nMin);
 }
 
@@ -332,10 +503,14 @@ const UInt& Rectangle::height() const {
   return(m_nHeight);
 }
 
-bool Rectangle::unit() const {
-  return(m_nWidth == 1 && m_nHeight == 1);
+UInt& Rectangle::length() {
+  return(m_nLength);
 }
 
-void Rectangle::swap() {
-  std::swap(m_nWidth, m_nHeight);
+const UInt& Rectangle::length() const {
+  return(m_nLength);
+}
+
+bool Rectangle::unit() const {
+  return(m_nWidth == 1 && m_nHeight == 1 && m_nLength == 1);
 }

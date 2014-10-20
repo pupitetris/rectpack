@@ -25,6 +25,8 @@
 #include "Interval.h"
 #include "Rational.h"
 
+#define NUM_ROTATIONS 6 // Number of possible orientations of an orthogonal figure of N dims is N!
+
 class BoxDimensions;
 class Coordinates;
 class DimsFunctor;
@@ -43,7 +45,8 @@ class Rectangle {
   const Rectangle& operator=(const Rectangle& src);
   void initialize(const UInt& nSize);
   void initialize(const UInt& nWidth,
-		  const UInt& nHeight);
+		  const UInt& nHeight,
+		  const UInt& nLength);
   void initialize(const RDimensions& d);
 
   /**
@@ -63,9 +66,9 @@ class Rectangle {
   bool uequal(const Rectangle* r) const;
   bool rotatable() const;
   void rotate();
-  void swap();
   void rotateTall();
   void rotateWide();
+  void rotateLong();
   void resetRotation();
   bool overlaps(const Rectangle* r) const;
 
@@ -76,15 +79,16 @@ class Rectangle {
   void setColor(float h);
   int nextX() const;
   int nextY() const;
+  int nextZ() const;
   bool skippingX(const Grid* pGrid);
   bool skippingY(const Grid* pGrid);
+  bool skippingZ(const Grid* pGrid);
   void print() const;
   void printNoLocation() const;
   void printTop() const;
-  void printWH() const;
-  void printHW() const;
   void constrain(const BoxDimensions& b);
   void constrainHeight(size_t nHeight);
+  void constrainLength(size_t nLength);
   void gutsyScale(const BoxDimensions& b);
   void rescale(const URational& ur);
   void unscale(const URational& ur);
@@ -108,9 +112,13 @@ class Rectangle {
    * including consideration of all rotations of the other rectangle.
    */
 
-  UInt minDim(const UInt& nMax,
-	      const DimsFunctor* pDims,
-	      const Rectangle* pRect) const;
+  UInt minDim2(const UInt& nMax,
+	       const DimsFunctor* pDims,
+	       const Rectangle* pRect) const;
+
+  UInt minDim3(const UInt& nMax,
+	       const DimsFunctor* pDims,
+	       const Rectangle* pRect) const;
 
   /**
    * Represents a unique ID for referring to this square. The space of
@@ -134,13 +142,23 @@ class Rectangle {
   UInt y;
   Interval yi;
 
+  /**
+   * The z-coordinate of this square.
+   */
+
+  UInt z;
+  Interval zi;
+
   UInt& width();
   const UInt& width() const;
   UInt& height();
   const UInt& height() const;
+  UInt& length();
+  const UInt& length() const;
 
   UInt m_nWidth;
   UInt m_nHeight;
+  UInt m_nLength;
   UInt m_nMinDim;
   UInt m_nMaxDim;
   UInt m_nArea;
@@ -160,6 +178,8 @@ class Rectangle {
   bool m_bRotatable;
   bool m_bSquare;
 
+  DimsFunctor *m_pRotation; // Represents the current rotation of the rectangle.
+
   /**
    * Set to non-negative if we're going to be fixing the placement of
    * this square on our grid.
@@ -168,6 +188,7 @@ class Rectangle {
   bool m_bFixed;
   UInt m_nFixX;
   UInt m_nFixY;
+  UInt m_nFixZ;
 
   URational m_nScale;
   URational m_nRScale;
