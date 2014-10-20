@@ -670,6 +670,9 @@ URational Instance::minDimPairs(const URational& nMax,
     }
     nMin = std::max(nMin, m);
   }
+
+  delete pRev;
+
   return(nMin);
 }
 
