@@ -18,10 +18,10 @@
  */
 
 #include "Compulsory.h"
-#include "HeightWidth.h"
+#include "HeightWidthLength.h"
 #include "Rectangle.h"
 #include "SimpleSums.h"
-#include "WidthHeight.h"
+#include "WidthHeightLength.h"
 #include <iostream>
 
 SimpleSums::SimpleSums() {
@@ -105,14 +105,14 @@ void SimpleSums::add(const Compulsory& nValue, const UInt& nMax) {
 
 void SimpleSums::initializeW(RectArray::const_iterator iBegin,
 			     RectArray::const_iterator iEnd) {
-  WidthHeight wh;
-  initialize(iBegin, iEnd, &wh);
+  WidthHeightLength whl;
+  initialize(iBegin, iEnd, &whl);
 }
 
 void SimpleSums::initializeH(RectArray::const_iterator iBegin,
 			     RectArray::const_iterator iEnd) {
-  HeightWidth hw;
-  initialize(iBegin, iEnd, &hw);
+  HeightWidthLength hwl;
+  initialize(iBegin, iEnd, &hwl);
 }
 
 void SimpleSums::print() const {

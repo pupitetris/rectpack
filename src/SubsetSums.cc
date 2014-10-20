@@ -17,10 +17,10 @@
  * along with rectpack. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "HeightWidth.h"
+#include "HeightWidthLength.h"
 #include "Rectangle.h"
 #include "SubsetSums.h"
-#include "WidthHeight.h"
+#include "WidthHeightLength.h"
 #include <iostream>
 #include <list>
 
@@ -164,15 +164,15 @@ void SubsetSums::computeEpsilon() {
 
 void SubsetSums::initializeW(RectArray::const_iterator iBegin,
 			     RectArray::const_iterator iEnd) {
-  WidthHeight wh;
-  initialize(iBegin, iEnd, &wh);
+  WidthHeightLength whl;
+  initialize(iBegin, iEnd, &whl);
   computeEpsilon();
 }
 
 void SubsetSums::initializeH(RectArray::const_iterator iBegin,
 			     RectArray::const_iterator iEnd) {
-  HeightWidth hw;
-  initialize(iBegin, iEnd, &hw);
+  HeightWidthLength hwl;
+  initialize(iBegin, iEnd, &hwl);
   computeEpsilon();
 }
 

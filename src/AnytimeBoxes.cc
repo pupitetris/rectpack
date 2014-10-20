@@ -31,7 +31,7 @@
 #include "Placements.h"
 #include "Rational.h"
 #include "Solution.h"
-#include "WidthHeight.h"
+#include "WidthHeightLength.h"
 #include <algorithm>
 #include <assert.h>
 #include <functional>

@@ -29,7 +29,7 @@
 #include "Parameters.h"
 #include "Placements.h"
 #include "Rational.h"
-#include "WidthHeight.h"
+#include "WidthHeightLength.h"
 #include <algorithm>
 #include <assert.h>
 #include <functional>
@@ -417,7 +417,7 @@ void BoundingBoxes::enqueueNewWidths(UInt nMinArea) {
   
   HeapBox hb;
   hb.m_nConflictLearningIndex = m_pParams->m_vInstance.size() - 1;
-  WidthHeight wh;
+  WidthHeightLength whl;
   for(; m_iWidth != m_Widths.end(); ++m_iWidth) {
 
     /**
@@ -441,8 +441,8 @@ void BoundingBoxes::enqueueNewWidths(UInt nMinArea) {
     nHeight = nMinArea / m_iWidth->first;
     if(nMinArea % m_iWidth->first) ++nHeight;
     nHeight = std::max(nHeight, m_pParams->m_vInstance.m_nMaxMin.m_nHeight.roundUp());
-    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimPairs(m_iWidth->first, &wh).roundUp());
-    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimStacked(m_iWidth->first, &wh).roundUp());
+    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimPairs(m_iWidth->first, &whl).roundUp());
+    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimStacked(m_iWidth->first, &whl).roundUp());
     if(m_pParams->m_vInstance.m_bDiagonalSymmetry)
       nHeight = std::max(nHeight, m_iWidth->first);
     hb.m_iHeight = m_Heights.lower_bound(nHeight);
@@ -456,7 +456,7 @@ void BoundingBoxes::enqueueNewWidths(UInt nMinArea) {
 
     bool bOpenInterval(false);
     URational nHeight2 =
-      m_pParams->m_vInstance.minDimStacked2(m_iWidth->first, &wh, bOpenInterval);
+      m_pParams->m_vInstance.minDimStacked2(m_iWidth->first, &whl, bOpenInterval);
     if(bOpenInterval) 
       while(nHeight2 >= (URational) hb.m_iHeight->first) ++hb.m_iHeight;
     else
@@ -552,7 +552,7 @@ void BoundingBoxes::enqueueNewIntWidths(UInt nMinArea) {
   
   HeapBox hb;
   hb.m_nConflictLearningIndex = m_pParams->m_vInstance.size() - 1;
-  WidthHeight wh;
+  WidthHeightLength whl;
   for(; m_nWidth <= m_pParams->m_vInstance.m_nStacked.m_nWidth.get_ui();
       ++m_nWidth) {
 
@@ -577,8 +577,8 @@ void BoundingBoxes::enqueueNewIntWidths(UInt nMinArea) {
     nHeight = nMinArea / m_nWidth;
     if(nMinArea % m_nWidth) ++nHeight;
     nHeight = std::max(nHeight, m_pParams->m_vInstance.m_nMaxMin.m_nHeight.roundUp());
-    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimPairs(m_nWidth, &wh).roundUp());
-    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimStacked(m_nWidth, &wh).roundUp());
+    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimPairs(m_nWidth, &whl).roundUp());
+    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimStacked(m_nWidth, &whl).roundUp());
     if(m_pParams->m_vInstance.m_bDiagonalSymmetry)
       nHeight = std::max(nHeight, m_nWidth);
     hb.m_Box.m_nHeight = nHeight;
@@ -592,7 +592,7 @@ void BoundingBoxes::enqueueNewIntWidths(UInt nMinArea) {
 
     bool bOpenInterval(false);
     URational nHeight2 =
-      m_pParams->m_vInstance.minDimStacked2(m_nWidth, &wh, bOpenInterval);
+      m_pParams->m_vInstance.minDimStacked2(m_nWidth, &whl, bOpenInterval);
     if(bOpenInterval) 
       hb.m_Box.m_nHeight = std::max(hb.m_Box.m_nHeight, nHeight2.get_ui() + 1);
     else

@@ -17,7 +17,7 @@
  * along with rectpack. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "WithHeightLength.h"
+#include "WidthHeightLength.h"
 #include "LengthHeightWidth.h"
 #include "RDimensions.h"
 #include "Rectangle.h"
