@@ -25,10 +25,6 @@ DimsFunctor::DimsFunctor() {
 DimsFunctor::~DimsFunctor() {
 }
 
-DimsFunctor* DimsFunctor::rotate() const {
-  return(NULL);
-}
-
-DimsFunctor* DimsFunctor::clone() const {
-  return(NULL);
+bool DimsFunctor::isRotated() {
+  return(false);
 }

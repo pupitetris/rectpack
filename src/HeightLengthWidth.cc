@@ -80,6 +80,10 @@ DimsFunctor* HeightLengthWidth::rotate() const {
   return(new LengthHeightWidth());
 }
 
+DimsFunctor* HeightLengthWidth::rotator() const {
+  return(new HeightWidthLength());
+}
+
 DimsFunctor* HeightLengthWidth::clone() const {
   return(new HeightLengthWidth());
 }

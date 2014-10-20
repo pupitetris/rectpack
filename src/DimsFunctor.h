@@ -46,8 +46,14 @@ class DimsFunctor {
   virtual const URational& d3(const RDimensions* r) const = 0;
   virtual const URational& d3(const RDimensions& r) const = 0;
   
-  virtual DimsFunctor* rotate() const;
-  virtual DimsFunctor* clone() const;
+  // Rotate is the next possible transformation of 6 (wraps around).
+  virtual DimsFunctor* rotate() const = 0;
+  // Rotator is the functor that transforms dimensions from the current to the next.
+  virtual DimsFunctor* rotator() const = 0;
+
+  virtual bool isRotated() const;
+
+  virtual DimsFunctor* clone() const = 0;
 };
 
 #endif // DIMSFUNCTOR_H

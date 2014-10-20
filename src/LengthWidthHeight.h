@@ -47,6 +47,7 @@ class LengthWidthHeight : public DimsFunctor {
   virtual const URational& d3(const RDimensions& r) const;
 
   virtual DimsFunctor* rotate() const;
+  virtual DimsFunctor* rotator() const;
   virtual DimsFunctor* clone() const;
 };
 

@@ -80,6 +80,14 @@ DimsFunctor* WidthHeightLength::rotate() const {
   return(new WidthLengthHeight());
 }
 
+DimsFunctor* WidthHeightLength::rotator() const {
+  return(new WidthLengthHeight());
+}
+
+bool WidthHeightLength::isRotated() const {
+  return(true);
+}
+
 DimsFunctor* WidthHeightLength::clone() const {
   return(new WidthHeightLength());
 }
