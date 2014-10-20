@@ -17,12 +17,12 @@
 ##
 
 SRC = \
-    AsciiGrid.cc \
-    AlignedComponents.cc \
     AlignedComponentPtrs.cc \
+    AlignedComponents.cc \
     AlignedCongruencies.cc \
     AnytimeBoxes.cc \
     APSP.cc \
+    AsciiGrid.cc \
     Assignment.cc \
     Attempt.cc \
     BacktrackSums.cc \
@@ -37,6 +37,7 @@ SRC = \
     Color.cc \
     Component.cc \
     ComponentPtrs.cc \
+    ComposedEmpty.cc \
     CompressionEntry.cc \
     CompressionStack.cc \
     Compulsory.cc \
@@ -67,24 +68,28 @@ SRC = \
     Fixed.cc \
     Globals.cc \
     GreaterCuSP.cc \
-    GreaterMinDim.cc \
     GreaterHeight.cc \
+    GreaterMinDim.cc \
     GreaterWidth.cc \
     Grid.cc \
     GridViz.cc \
     HeapBox.cc \
     HeightFirst.cc \
     HeightFirstPlacement.cc \
-    HeightWidth.cc \
+    HeightLengthWidth.cc \
+    HeightWidthLength.cc \
     ICoords.cc \
     Inferences.cc \
     Instance.cc \
     IntBalOpt.cc \
+    Intersect.cc \
     Interval.cc \
     IntPack.cc \
     IntPlacement.cc \
     IntPlacements.cc \
     Label.cc \
+    LengthHeightWidth.cc \
+    LengthWidthHeight.cc \
     LessHeight.cc \
     LessMinDim.cc \
     LessRatioHW.cc \
@@ -123,6 +128,7 @@ SRC = \
     PriorityQ.cc \
     Range.cc \
     RatDims.cc \
+    Rational.cc \
     RatPack.cc \
     RDimensions.cc \
     Rectangle.cc \
@@ -136,12 +142,12 @@ SRC = \
     RefHeight.cc \
     RInterval.cc \
     SearchControl.cc \
+    SimpleSums.cc \
+    SingleStack.cc \
     Solution.cc \
     SpaceFill.cc \
     SquareDom.cc \
     SquarePacker.cc \
-    SimpleSums.cc \
-    SingleStack.cc \
     SubsetSums.cc \
     SubsetSumsSet.cc \
     SymKey.cc \
@@ -156,4 +162,5 @@ SRC = \
     WastedBins.cc \
     WidthFirst.cc \
     WidthFirstPlacement.cc \
-    WidthHeight.cc
+    WidthHeightLength.cc \
+    WidthLengthHeight.cc
