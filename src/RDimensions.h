@@ -112,9 +112,13 @@ class RDimensions {
    * @return a minimum height.
    */
 
-  URational minDim(const URational& nMax, const RDimensions& r,
-		   const DimsFunctor* pDims1,
-		   const DimsFunctor* pDims2) const;
+  URational minDim2(const URational& nMax, const RDimensions& r,
+		    const DimsFunctor* pDims1,
+		    const DimsFunctor* pDims2) const;
+
+  URational minDim3(const URational& nMax, const RDimensions& r,
+		    const DimsFunctor* pDims1,
+		    const DimsFunctor* pDims2) const;
 
   typedef enum {
     UNSPECIFIED,

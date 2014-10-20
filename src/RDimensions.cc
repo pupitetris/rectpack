@@ -260,16 +260,24 @@ const URational& RDimensions::maxDim() const {
   return(std::max(m_nWidth, m_nHeight, m_nLength));
 }
 
-URational RDimensions::minDim(const URational& nMax,
-			      const RDimensions& r,
-			      const DimsFunctor* pDims1,
-			      const DimsFunctor* pDims2) const {
-  URational nMin(pDims1->d1(this) + pDims2->d1(r));
-  if (pDims1->d1(this) + pDims2->d1(r) <= nMax)
-    nMin = std::min(nMin, std::max(pDims1->d2(this), pDims->d2(r)));
-  if (pDims1->d2(this) + pDims2->d2(r) <= nMax)
-    nMin = std::min(nMin, std::max(pDims1->d3(this), pDims->d3(r)));
-  return(nMin);
+URational RDimensions::minDim2(const URational& nMax,
+			       const RDimensions& r,
+			       const DimsFunctor* pDims1,
+			       const DimsFunctor* pDims2) const {
+  if(pDims1->d1(this) + pDims2->d1(r) > nMax)
+    return(pDims1->d2(this) + pDims2->d2(r));
+  else
+    return(std::max(pDims1->d2(this), pDims2->d2(r)));
+}
+
+URational RDimensions::minDim3(const URational& nMax,
+			       const RDimensions& r,
+			       const DimsFunctor* pDims1,
+			       const DimsFunctor* pDims2) const {
+  if(pDims1->d1(this) + pDims2->d1(r) > nMax)
+    return(pDims1->d3(this) + pDims2->d3(r));
+  else
+    return(std::max(pDims1->d3(this), pDims2->d3(r)));
 }
 
 void RDimensions::relax() {
