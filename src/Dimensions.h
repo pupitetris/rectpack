@@ -34,14 +34,14 @@ class Dimensions {
   Dimensions();
   Dimensions(const Dimensions& d);
   Dimensions(const RDimensions& d);
-  Dimensions(UInt nWidth, UInt nHeight);
+  Dimensions(UInt nWidth, UInt nHeight, UInt nLength);
   Dimensions(const Component* c);
-  void initialize(UInt nWidth, UInt nHeight);
+  void initialize(UInt nWidth, UInt nHeight, UInt nLength);
   void initMax();
   void initMin();
   void print(std::ostream& os) const;
   void print() const;
-  bool canFit(int nWidth, int nHeight) const;
+  bool canFit(int nWidth, int nHeight, int nLength) const;
   ~Dimensions();
   bool square() const;
   const Dimensions& operator=(const Dimensions& d);
@@ -56,6 +56,7 @@ class Dimensions {
   float ratiohw() const;
   UInt m_nWidth;
   UInt m_nHeight;
+  UInt m_nLength;
   UInt m_nMinDim;
   UInt m_nArea;
 };

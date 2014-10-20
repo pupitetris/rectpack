@@ -30,11 +30,11 @@ class ICoords {
   friend std::ostream& operator<<(std::ostream& os,
 				  const ICoords& c);
  public:
-  inline ICoords() : x(0), y(0) { };
-  inline ICoords(Int m, Int n) : x(m), y(n) { };
+  inline ICoords() : x(0), y(0), z(0) { };
+  inline ICoords(Int nX, Int nY, Int nZ) : x(nX), y(nY), z(nZ) { };
   inline ~ICoords() { };
-  inline void set(Int m, Int n) {
-    x = m; y = n;
+  inline void set(Int nX, Int nY, Int nZ) {
+    x = nX; y = nY; z = nZ;
   };
 
   bool operator<(const ICoords& rhs) const;
@@ -42,6 +42,7 @@ class ICoords {
 
   Int x;
   Int y;
+  Int z;
 };
 
 std::ostream& operator<<(std::ostream& os, const ICoords& c);

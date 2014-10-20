@@ -35,8 +35,9 @@ class BoxDimensions {
   BoxDimensions();
   ~BoxDimensions();
   void initialize(const UInt& n);
-  void initialize(const UInt& w, const UInt& h);
+  void initialize(const UInt& w, const UInt& h, const UInt& l);
   void initializeH(const UInt& h);
+  void initializeL(const UInt& l);
   bool operator<(const BoxDimensions& rhs) const;
   bool operator>(const BoxDimensions& rhs) const;
   bool operator==(const BoxDimensions& rhs) const;
@@ -53,6 +54,7 @@ class BoxDimensions {
 
   UInt m_nWidth;
   UInt m_nHeight;
+  UInt m_nLength;
   UInt m_nArea;
 
   void print() const;

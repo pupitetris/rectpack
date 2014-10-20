@@ -29,12 +29,14 @@ class Fixed {
 
  public:
   Fixed();
-  Fixed(size_t w, size_t h, size_t x, size_t y);
+  Fixed(size_t w, size_t h, size_t l, size_t x, size_t y, size_t z);
   ~Fixed();
   size_t m_nWidth;
   size_t m_nHeight;
+  size_t m_nLength;
   size_t m_nX;
   size_t m_nY;
+  size_t m_nZ;
 };
 
 std::ostream& operator<<(std::ostream& os, const Fixed& rhs);

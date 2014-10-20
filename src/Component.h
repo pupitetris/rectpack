@@ -47,6 +47,7 @@ class Component {
   bool sameDims(const Component& c) const;
   bool xOverlaps(const Component& c) const;
   bool yOverlaps(const Component& c) const;
+  bool zOverlaps(const Component& c) const;
 
   /**
    * Writes into the nStart and nEnd variables the starting and ending
@@ -66,18 +67,24 @@ class Component {
 
   void yOverlap(const Component& c, UInt& nStart,
 		UInt& nEnd) const;
+  void zOverlap(const Component& c, UInt& nStart,
+		UInt& nEnd) const;
   void assignX(const EmptyCorner& ec);
   void assignY(const EmptyCorner& ec);
+  void assignZ(const EmptyCorner& ec);
   bool fills(const EmptyCorner& ec) const;
   void instantiate();
   void instantiateX();
   void instantiateY();
+  void instantiateZ();
+  UInt z2() const;
   UInt y2() const;
   UInt x2() const;
 
   UInt m_nID;
   Int m_nX;
   Int m_nY;
+  Int m_nZ;
   Dimensions m_Dims;
   bool m_bEmpty;
   bool m_bTopLevel;

@@ -35,7 +35,7 @@ class Interval;
 class Parameters;
 class Packer;
 
-class Grid : public std::vector<std::vector<UInt> > {
+class Grid : public std::vector<std::vector<std::vector<UInt> > > {
  public:
   Grid(const Packer* pPacker);
   Grid();
@@ -50,10 +50,13 @@ class Grid : public std::vector<std::vector<UInt> > {
    * horizontal grids.
    */
 
-  void draw(Int x, Int dx, Int y, Int dy, UInt id) {
-    for(Int i = x; i < x + dx; ++i)
-      std::fill(operator[](i).begin() + y,
-		operator[](i).begin() + y + dy, id);
+  void draw(Int x, Int dx, Int y, Int dy, Int z, Int dz, UInt id) {
+    for(Int i = x; i < x + dx; ++i) {
+      std::vector<std::vector<UInt> > vy = operator[](i);
+      for(Int j = y; j < y + dy; ++j)
+	std::fill(vy[i].begin() + z,
+		  vy[i].begin() + z + dz, id);
+    }
   };
 
   /**
@@ -83,126 +86,151 @@ class Grid : public std::vector<std::vector<UInt> > {
   void add(Component* c);
   void add(Component* c, std::vector<Int>& v);
   void addSimple(const Rectangle* r) {
-    draw(r->x, r->m_nWidth, r->y, r->m_nHeight, r->m_nID);
+    draw(r->x, r->m_nWidth, r->y, r->m_nHeight, r->z, r->m_nLength, r->m_nID);
   };
 
  public:
   void del(const Rectangle* s);
   void del(Component* c);
   bool empty(const ICoords& c) const {
-    return(operator[](c.x).operator[](c.y) == GRIDEMPTY);
+    return(operator[](c.x).operator[](c.y).operator[](c.z) == GRIDEMPTY);
   }
 
-  bool empty(Int x, Int y) const {
-    return(operator[](x).operator[](y) == GRIDEMPTY);
+  bool empty(Int x, Int y, Int z) const {
+    return(operator[](x).operator[](y).operator[](z) == GRIDEMPTY);
   }
 
-  bool empty(UInt x, UInt y) const {
-    return(operator[](x).operator[](y) == GRIDEMPTY);
+  bool empty(UInt x, UInt y, UInt z) const {
+    return(operator[](x).operator[](y).operator[](z) == GRIDEMPTY);
   }
 
-  bool empty(Int x, UInt y) const {
-    return(operator[](x).operator[](y) == GRIDEMPTY);
+  bool empty(Int x, UInt y, UInt z) const {
+    return(operator[](x).operator[](y).operator[](z) == GRIDEMPTY);
   }
 
-  bool empty(UInt x, Int y) const {
-    return(operator[](x).operator[](y) == GRIDEMPTY);
+  bool empty(UInt x, Int y, Int z) const {
+    return(operator[](x).operator[](y).operator[](z) == GRIDEMPTY);
   }
 
-  bool empty(Int x, Int xWidth, Int y, Int yWidth) {
-    return(empty(x, y) &&
-	   empty(x, y + yWidth - 1) &&
-	   empty(x + xWidth - 1, y) &&
-	   empty(x + xWidth - 1, y + yWidth - 1));
+  bool empty(Int x, Int xWidth, Int y, Int yWidth, Int z, Int zWidth) {
+    return(empty(x, y, z) &&
+	   empty(x, y + yWidth - 1, z) &&
+	   empty(x + xWidth - 1, y, z) &&
+	   empty(x + xWidth - 1, y + yWidth - 1, z) &&
+	   empty(x, y, z + zWidth - 1) &&
+	   empty(x, y + yWidth - 1, z + zWidth - 1) &&
+	   empty(x + xWidth - 1, y, z + zWidth - 1) &&
+	   empty(x + xWidth - 1, y + yWidth - 1, z + zWidth - 1));
   };
 
   bool empty(const Rectangle* r) {
-    return(empty(r->x, r->m_nWidth, r->y, r->m_nHeight));
+    return(empty(r->x, r->m_nWidth, r->y, r->m_nHeight, r->z, r->m_nLength));
   }
 
   bool emptyxi(const Rectangle* r) {
-    return(empty(r->xi.m_nEnd, r->xi.m_nWidth, r->y, r->m_nHeight));
+    return(empty(r->xi.m_nEnd, r->xi.m_nWidth, r->y, r->m_nHeight, r->z, r->m_nLength));
   };
 
   bool emptyyi(const Rectangle* r) {
-    return(empty(r->x, r->m_nWidth, r->yi.m_nEnd, r->yi.m_nWidth));
+    return(empty(r->x, r->m_nWidth, r->yi.m_nEnd, r->yi.m_nWidth, r->z, r->m_nLength));
+  }
+
+  bool emptyzi(const Rectangle* r) {
+    return(empty(r->x, r->m_nWidth, r->y, r->m_nWidth, r->zi.m_nEnd, r->zi.m_nWidth));
   }
 
   UInt get(const ICoords& c) const {
-    return(operator[](c.x)[c.y]);
+    return(operator[](c.x)[c.y][c.z]);
   };
   
-  UInt get(Int x, Int y) const {
-    return(operator[](x)[y]);
+  UInt get(Int x, Int y, Int z) const {
+    return(operator[](x)[y][z]);
   };
 
-  UInt& get(Int x, Int y) {
-    return(operator[](x)[y]);
+  UInt& get(Int x, Int y, Int z) {
+    return(operator[](x)[y][z]);
   };
 
-  UInt get(UInt x, UInt y) const {
-    return(operator[](x)[y]);
+  UInt get(UInt x, UInt y, UInt z) const {
+    return(operator[](x)[y][z]);
   };
 
-  UInt& get(UInt x, UInt y) {
-    return(operator[](x)[y]);
+  UInt& get(UInt x, UInt y, UInt z) {
+    return(operator[](x)[y][z]);
   };
 
-  const Rectangle* rect(Int x, Int y) const {
-    return(m_pPacker->m_vRectPtrs[get(x, y)]);
+  const Rectangle* rect(Int x, Int y, Int z) const {
+    return(m_pPacker->m_vRectPtrs[get(x, y, z)]);
   }
 
-  UInt width(Int x, Int y) const {
-    return(rect(x, y)->m_nWidth);
+  UInt width(Int x, Int y, Int z) const {
+    return(rect(x, y, z)->m_nWidth);
   }
 
-  UInt height(Int x, Int y) const {
-    return(rect(x, y)->m_nHeight);
+  UInt height(Int x, Int y, Int z) const {
+    return(rect(x, y, z)->m_nHeight);
   }
 
-  bool occupied(Int x, Int y) const {
-    return(operator[](x).operator[](y) != GRIDEMPTY);
+  UInt length(Int x, Int y, Int z) const {
+    return(rect(x, y, z)->m_nLength);
+  }
+
+  bool occupied(Int x, Int y, Int z) const {
+    return(operator[](x).operator[](y).operator[](z) != GRIDEMPTY);
   };
 
   /**
    * Checks the outline of the rectangle to see if it is occupied.
    */
 
-  bool occupied(UInt nx, UInt ny, UInt w, UInt h) const {
+  bool occupied(UInt nx, UInt ny, UInt nz, UInt w, UInt h, UInt l) const {
     for(UInt x = nx; x < nx + w; ++x)
-      if(occupied(x, ny) || occupied(x, ny + h - 1))
+      if(occupied(x, ny, nz) || 
+	 occupied(x, ny + h - 1, nz) ||
+	 occupied(x, ny, nz + l - 1) ||
+	 occupied(x, ny + h - 1, nz + l - 1))
 	return(true);
     for(UInt y = ny + 1; y < ny + h - 1; ++y)
-      if(occupied(nx, y) || occupied(nx + w - 1, y))
+      if(occupied(nx, y, nz) || 
+	 occupied(nx + w - 1, y, nz) ||
+	 occupied(nx, y, nz + l - 1) ||
+	 occupied(nx + w - 1, y, nz + l - 1))
+	return(true);
+    for(UInt z = nz + 1; z < nz + l - 1; ++z)
+      if(occupied(nx, ny, z) || 
+	 occupied(nx + w - 1, ny, z) ||
+	 occupied(nx, ny + h - 1, z) ||
+	 occupied(nx + w - 1, ny + h - 1, z))
 	return(true);
     return(false);
   }
 
-  bool occupied(UInt nx, UInt ny, const Dimensions& d) const {
-    return(occupied(nx, ny, d.m_nWidth, d.m_nHeight));
+  bool occupied(UInt nx, UInt ny, UInt nz, const Dimensions& d) const {
+    return(occupied(nx, ny, nz, d.m_nWidth, d.m_nHeight, d.m_nLength));
   }
   
   bool occupied(const ICoords& c, const Dimensions& d) const {
-    return(occupied((UInt) c.x, (UInt) c.y, d));
+    return(occupied((UInt) c.x, (UInt) c.y, (UInt) c.z, d));
   }
 
   bool occupied(const Rectangle* r) const {
-    return(occupied(r->x, r->y, r->m_nWidth, r->m_nHeight));
+    return(occupied(r->x, r->y, r->z, r->m_nWidth, r->m_nHeight, r->m_nLength));
   }
 
   bool occupied(const Component* c) const {
-    return(occupied(c->m_nX, c->m_nY, c->m_Dims));
+    return(occupied(c->m_nX, c->m_nY, c->m_nZ, c->m_Dims));
   }
 
-  bool areaOccupied(UInt nx, UInt ny, UInt w, UInt h) const {
+  bool areaOccupied(UInt nx, UInt ny, UInt nz, UInt w, UInt h, UInt l) const {
     for(UInt x = nx; x < nx + w; ++x)
       for(UInt y = ny; y < ny + h; ++y)
-	if(occupied(x, y)) return(true);
+	for(UInt z = nz; z < nz + l; ++z)
+	  if(occupied(x, y, z)) return(true);
     return(false);
   }
 
   bool areaOccupied(const Rectangle* r) const {
-    return(areaOccupied(r->x, r->y, r->m_nWidth, r->m_nHeight));
+    return(areaOccupied(r->x, r->y, r->z, r->m_nWidth, r->m_nHeight, r->m_nLength));
   }
 
   const BoxDimensions& box() const {
@@ -217,6 +245,7 @@ class Grid : public std::vector<std::vector<UInt> > {
 
   std::vector<std::vector<UInt> > m_vHor;
   std::vector<std::vector<UInt> > m_vVer;
+  std::vector<std::vector<UInt> > m_vLon;
 
  protected:
   void resize(Int n, const std::vector<UInt>& v);

@@ -32,8 +32,8 @@ class Coordinates {
 				  const Coordinates& c);
  public:
   Coordinates();
-  Coordinates(UInt m, UInt n);
-  Coordinates(const URational& m, const URational& n);
+  Coordinates(UInt nX, UInt nY, UInt nZ);
+  Coordinates(const URational& nX, const URational& nY, const URational& nZ);
   ~Coordinates();
   Coordinates& operator*=(const URational& nScale);
   Coordinates& operator/=(const URational& nScale);
@@ -45,6 +45,7 @@ class Coordinates {
 
   URational x;
   URational y;
+  URational z;
 };
 
 std::ostream& operator<<(std::ostream& os, const Coordinates& c);
