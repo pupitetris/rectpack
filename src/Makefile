@@ -46,6 +46,11 @@ ifeq ($(MAKECMDGOALS),)
 MAKECMDGOALS=release
 endif
 
+GOALDIR=$(dir $(MAKECMDGOALS))
+ifeq ($(GOALDIR),./)
+GOALDIR=$(MAKECMDGOALS)/
+endif
+
 # The source files: regardless of where they reside in 
 # the source tree, VPATH will locate them...
 
@@ -114,19 +119,19 @@ endif
 	@echo "Configuration "$(MAKECMDGOALS)
 	@echo "------------------------"
 
-$(MAKECMDGOALS)/${EXECUTABLE}: ${OBJ} | inform
-	@mkdir -p $(MAKECMDGOALS)
+$(GOALDIR)${EXECUTABLE}: ${OBJ} | inform
+	@mkdir -p $(GOALDIR)
 	$(CXX) -g -o $@ $^ ${CXXFLAGS} ${LIBFLAGS}
 
-$(MAKECMDGOALS)/%.o: %.cc
-	@mkdir -p $(MAKECMDGOALS)
+$(GOALDIR)%.o: %.cc
+	@mkdir -p $(GOALDIR)
 	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 deps/%.d: %.cc
 	@mkdir -p deps
 	@echo Generating dependencies for $<
 	@set -e ; $(CXXDEP) -MM $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,$(MAKECMDGOALS)\/\1.o $@ : ,g' \
+	sed 's,\($*\)\.o[ :]*,$(GOALDIR)\1.o $@ : ,g' \
 		< $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
