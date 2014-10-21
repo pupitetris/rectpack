@@ -26,9 +26,13 @@
 
 class RDimensions;
 class Rectangle;
+class WidthHeightLength;
 
 class WidthHeightLength : public DimsFunctor {
  public:
+  static DimsFunctor* get();
+  static WidthHeightLength* singleton;
+
   WidthHeightLength();
   virtual ~WidthHeightLength();
 
@@ -48,6 +52,7 @@ class WidthHeightLength : public DimsFunctor {
 
   virtual DimsFunctor* rotate() const;
   virtual DimsFunctor* rotator() const;
+  virtual bool isRotated();
   virtual DimsFunctor* clone() const;
 };
 

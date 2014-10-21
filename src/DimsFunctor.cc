@@ -25,6 +25,10 @@ DimsFunctor::DimsFunctor() {
 DimsFunctor::~DimsFunctor() {
 }
 
+DimsFunctor* DimsFunctor::get () {
+  return(NULL);
+}
+
 bool DimsFunctor::isRotated() {
-  return(false);
+  return(true);
 }

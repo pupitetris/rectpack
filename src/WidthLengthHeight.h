@@ -29,6 +29,9 @@ class Rectangle;
 
 class WidthLengthHeight : public DimsFunctor {
  public:
+  static DimsFunctor* get();
+  static WidthLengthHeight* singleton;
+
   WidthLengthHeight();
   virtual ~WidthLengthHeight();
 
@@ -51,4 +54,4 @@ class WidthLengthHeight : public DimsFunctor {
   virtual DimsFunctor* clone() const;
 };
 
-#endif // WIDTHHEIGHTLENGTH_H
+#endif // WIDTHLENGTHHEIGHT_H

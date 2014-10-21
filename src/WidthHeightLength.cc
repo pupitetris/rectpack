@@ -22,10 +22,18 @@
 #include "RDimensions.h"
 #include "Rectangle.h"
 
+WidthHeightLength* WidthHeightLength::singleton = NULL;
+
 WidthHeightLength::WidthHeightLength() {
 }
 
 WidthHeightLength::~WidthHeightLength() {
+}
+
+DimsFunctor* WidthHeightLength::get() {
+  if (singleton == NULL)
+    singleton = new WidthHeightLength ();
+  return singleton;
 }
 
 const UInt& WidthHeightLength::d1(const Rectangle* r) const {
@@ -77,15 +85,15 @@ const URational& WidthHeightLength::d3(const RDimensions& r) const {
 }
 
 DimsFunctor* WidthHeightLength::rotate() const {
-  return(new WidthLengthHeight());
+  return(WidthLengthHeight::get ());
 }
 
 DimsFunctor* WidthHeightLength::rotator() const {
-  return(new WidthLengthHeight());
+  return(WidthLengthHeight::get ());
 }
 
-bool WidthHeightLength::isRotated() const {
-  return(true);
+bool WidthHeightLength::isRotated() {
+  return(false);
 }
 
 DimsFunctor* WidthHeightLength::clone() const {

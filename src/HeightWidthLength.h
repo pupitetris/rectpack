@@ -29,6 +29,9 @@ class Rectangle;
 
 class HeightWidthLength : public DimsFunctor {
  public:
+  static DimsFunctor* get();
+  static HeightWidthLength* singleton;
+
   HeightWidthLength();
   virtual ~HeightWidthLength();
 

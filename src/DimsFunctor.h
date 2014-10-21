@@ -31,6 +31,7 @@ class DimsFunctor {
  public:
   DimsFunctor();
   virtual ~DimsFunctor();
+  static DimsFunctor* get();
 
   virtual const UInt& d1(const Rectangle* r) const = 0;
   virtual const UInt& d1(const Rectangle& r) const = 0;
@@ -51,7 +52,7 @@ class DimsFunctor {
   // Rotator is the functor that transforms dimensions from the current to the next.
   virtual DimsFunctor* rotator() const = 0;
 
-  virtual bool isRotated() const;
+  virtual bool isRotated();
 
   virtual DimsFunctor* clone() const = 0;
 };

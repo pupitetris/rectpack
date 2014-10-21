@@ -17,15 +17,24 @@
  * along with rectpack. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LengthWidthHeight.h"
+#include "HeightLengthWidth.h"
+#include "WidthLengthHeight.h"
 #include "HeightWidthLength.h"
 #include "RDimensions.h"
 #include "Rectangle.h"
+
+HeightWidthLength* HeightWidthLength::singleton = NULL;
 
 HeightWidthLength::HeightWidthLength() {
 }
 
 HeightWidthLength::~HeightWidthLength() {
+}
+
+DimsFunctor* HeightWidthLength::get() {
+  if (singleton == NULL)
+    singleton = new HeightWidthLength ();
+  return singleton;
 }
 
 const UInt& HeightWidthLength::d1(const Rectangle* r) const {
@@ -77,11 +86,11 @@ const URational& HeightWidthLength::d3(const RDimensions& r) const {
 }
 
 DimsFunctor* HeightWidthLength::rotate() const {
-  return(new LengthWidthHeight());
+  return(HeightLengthWidth::get());
 }
 
 DimsFunctor* HeightWidthLength::rotator() const {
-  return(new LengthHeightWidth());
+  return(WidthLengthHeight::get());
 }
 
 DimsFunctor* HeightWidthLength::clone() const {
