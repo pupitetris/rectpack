@@ -86,9 +86,9 @@ class RDimensions {
   void rotateH(); // Rotate on y axis
   void relax();
   void setArea();
-  URational ratiowhl() const;
-  URational ratiohwl() const;
-  URational ratiolhw() const;
+  URational ratioW() const;
+  URational ratioH() const;
+  URational ratioL() const;
   const URational& maxDim() const;
   
   /**

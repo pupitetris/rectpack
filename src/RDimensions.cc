@@ -230,15 +230,15 @@ void RDimensions::rotateH() {
   std::swap(m_nWidth, m_nLength);
 }
 
-URational RDimensions::ratiowhl() const {
+URational RDimensions::ratioW() const {
   return(m_nWidth / sqrt(m_nHeight * m_nHeight + m_nLength * m_nLength));
 }
 
-URational RDimensions::ratiohwl() const {
+URational RDimensions::ratioH() const {
   return(m_nHeight / sqrt(m_nWidth * m_nWidth + m_nLength * m_nLength));
 }
 
-URational RDimensions::ratiolhw() const {
+URational RDimensions::ratioL() const {
   return(m_nLength / sqrt(m_nHeight * m_nHeight + m_nWidth * m_nWidth));
 }
 
