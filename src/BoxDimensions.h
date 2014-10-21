@@ -44,7 +44,9 @@ class BoxDimensions {
   bool operator!=(const BoxDimensions& rhs) const;
   bool canFit(const Rectangle* r) const;
   void rotate();
-  URational ratio() const;
+  URational ratioW() const;
+  URational ratioH() const;
+  URational ratioL() const;
   bool square() const;
   std::string toString() const;
   const BoxDimensions& operator*=(const UInt& ur);

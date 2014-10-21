@@ -29,18 +29,24 @@ BoxDimensions::~BoxDimensions() {
 }
 
 void BoxDimensions::initialize(const UInt& n) {
-  initialize(n, n);
+  initialize(n, n, n);
 }
 
-void BoxDimensions::initialize(const UInt& w, const UInt& h) {
+void BoxDimensions::initialize(const UInt& w, const UInt& h, const UInt& l) {
   m_nWidth = w;
   m_nHeight = h;
-  m_nArea = w * h;
+  m_nLength = l;
+  m_nArea = w * h * l;
 }
 
 void BoxDimensions::initializeH(const UInt& h) {
   m_nHeight = h;
-  m_nArea = m_nWidth * h;
+  m_nArea = m_nWidth * h * m_nLength;
+}
+
+void BoxDimensions::initializeL(const UInt& l) {
+  m_nLength = l;
+  m_nArea = m_nWidth * m_nHeight * l;
 }
 
 bool BoxDimensions::operator<(const BoxDimensions& rhs) const {
@@ -48,8 +54,9 @@ bool BoxDimensions::operator<(const BoxDimensions& rhs) const {
     return(m_nArea < rhs.m_nArea);
   else if(m_nWidth != rhs.m_nWidth)
     return(m_nWidth < rhs.m_nWidth);
-  else
+  else if(m_nHeight != rhs.m_nHeight)
     return(m_nHeight < rhs.m_nHeight);
+  return(m_nLength < rhs.m_nLength)
 }
 
 bool BoxDimensions::operator>(const BoxDimensions& rhs) const {
@@ -57,12 +64,21 @@ bool BoxDimensions::operator>(const BoxDimensions& rhs) const {
     return(m_nArea > rhs.m_nArea);
   else if(m_nWidth != rhs.m_nWidth)
     return(m_nWidth > rhs.m_nWidth);
-  else
+  else if(m_nHeight != rhs.m_nHeight)
     return(m_nHeight > rhs.m_nHeight);
+  return(m_nLength > rhs.m_nLength)
 }
 
-URational BoxDimensions::ratio() const {
-  return(URational(m_nWidth, m_nHeight));
+URational BoxDimensions::ratioW() const {
+  return(URational(m_nWidth, sqrt(m_nHeight * m_nHeight + m_nLength * m_nLength)));
+}
+
+URational BoxDimensions::ratioH() const {
+  return(URational(m_nHeight, sqrt(m_nWidth * m_nWidth + m_nLength * m_nLength)));
+}
+
+URational BoxDimensions::ratioL() const {
+  return(URational(m_nLength, sqrt(m_nHeight * m_nHeight + m_nWidth * m_nWidth)));
 }
 
 std::string BoxDimensions::toString() const {
@@ -84,20 +100,22 @@ void BoxDimensions::rotate() {
 }
 
 bool BoxDimensions::square() const {
-  return(m_nWidth == m_nHeight);
+  return(m_nWidth == m_nHeight && m_nWidth == m_nLength);
 }
 
 const BoxDimensions& BoxDimensions::operator*=(const UInt& ur) {
   m_nWidth *= ur;
   m_nHeight *= ur;
-  m_nArea = m_nWidth * m_nHeight;
+  m_nLength *= ur;
+  m_nArea = m_nWidth * m_nHeight * m_nLength;
   return(*this);
 }
 
 const BoxDimensions& BoxDimensions::operator/=(const UInt& ur) {
   m_nWidth /= ur;
   m_nHeight /= ur;
-  m_nArea = m_nWidth * m_nHeight;
+  m_nLength /= ur;
+  m_nArea = m_nWidth * m_nHeight * m_nLength;
   return(*this);
 }
 
@@ -106,7 +124,9 @@ const BoxDimensions& BoxDimensions::operator*=(const URational& ur) {
   m_nWidth /= ur.get_den();
   m_nHeight *= ur.get_num();
   m_nHeight /= ur.get_den();
-  m_nArea = m_nWidth * m_nHeight;
+  m_nLength *= ur.get_num();
+  m_nLength /= ur.get_den();
+  m_nArea = m_nWidth * m_nHeight * m_nLength;
   return(*this);
 }
 
@@ -115,18 +135,20 @@ const BoxDimensions& BoxDimensions::operator/=(const URational& ur) {
   m_nWidth /= ur.get_num();
   m_nHeight *= ur.get_den();
   m_nHeight /= ur.get_num();
-  m_nArea = m_nWidth * m_nHeight;
+  m_nLength *= ur.get_den();
+  m_nLength /= ur.get_num();
+  m_nArea = m_nWidth * m_nHeight * m_nLength;
   return(*this);
 }
 
 void BoxDimensions::print() const {
-  std::cout << m_nWidth << "x" << m_nHeight << std::endl;
+  std::cout << m_nWidth << "x" << m_nHeight << "x" << m_nLength << std::endl;
 }
 
 bool BoxDimensions::operator==(const BoxDimensions& rhs) const {
-  return(m_nWidth == rhs.m_nWidth && m_nHeight == rhs.m_nHeight);
+  return(m_nWidth == rhs.m_nWidth && m_nHeight == rhs.m_nHeight && m_nLength == rhs.m_nLength);
 }
 
 bool BoxDimensions::operator!=(const BoxDimensions& rhs) const {
-  return(m_nWidth != rhs.m_nWidth || m_nHeight != rhs.m_nHeight);
+  return(m_nWidth != rhs.m_nWidth || m_nHeight != rhs.m_nHeight || m_nLength != rhs.m_nLength);
 }
