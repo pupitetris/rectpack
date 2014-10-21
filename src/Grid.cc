@@ -71,138 +71,144 @@ void Grid::resize(Int nDim) {
 }
 
 void Grid::del(const Rectangle* s) {
-  Int x, y;       /* coordinates of the grid to test */
-  Int horz, vert; /* old horizontal width and vertical height */
-  Int top;        /* y index of top of old empty strip */
-  Int left;       /* x index of left-most cell of old empty strip */
+  Int x, y;       // coordinates of the grid to test
+  Int horz, vert; // old horizontal width and vertical height
+  Int top;        // y index of top of old empty strip
+  Int left;       // x index of left-most cell of old empty strip
 
-  for (x = s->x; x < (Int) (s->x + s->m_nWidth); x++)         /* for each column occupied by square */
-    std::fill(operator[](x).begin() + s->y, 
+  for (x = s->x; x < (Int) (s->x + s->m_nWidth); x++)         // for each column occupied by square
+    std::fill(operator[](x).begin() + s->y,
 	      operator[](x).begin() + s->y + s->m_nHeight, GRIDEMPTY);
 
-  for (x = s->x; x < (Int) (s->x + s->m_nWidth); x++) {       /* each column occupied by placement */
-    vert = m_vVer[x][s->y];                                   /* old height of vertical strip */
-    if (s->y >= 1 && empty(x, (Int) s->y - 1))                /* column has at least one empty position above*/
-      top = s->y - m_vVer[x][s->y - 1];                       /* index of top of old vertical strip */
+  for (x = s->x; x < (Int) (s->x + s->m_nWidth); x++) {         // each column occupied by placement
+    vert = m_vVer[x][s->y];                                     // old height of vertical strip
+    if (s->y >= 1 && empty(x, (Int) s->y - 1))                  // column has at least one empty position above
+      top = s->y - m_vVer[x][s->y - 1];                         // index of top of old vertical strip
     else top = s->y;
-    for (y = top; y < (Int) s->y; y++)                        /* for each cell of column */
-      m_vVer[x][y] = vert;                                    /* new vertical height of column */
-    for (y = s->y + s->m_nHeight; y <= top + vert - 1; y++)   /* each cell of column below */
-      m_vVer[x][y] = vert;                                    /* old vertical height of column */
+    for (y = top; y < (Int) s->y; y++)                          // for each cell of column
+      m_vVer[x][y] = vert;                                      // new vertical height of column
+    for (y = s->y + s->m_nHeight; y <= top + vert - 1; y++)     // each cell of column below
+      m_vVer[x][y] = vert;                                      // old vertical height of column
   }
-    
-  for(y = s->y; y < (Int) (s->y + s->m_nHeight); y++) {       /* for each row occupied by placement */
-    horz = m_vHor[s->x][y];                                   /* old width of horizontal strip */
-    if(s->x >= 1 && empty((Int) (s->x - 1), y))               /* row has at least one empty position to left*/
-
-      left = s->x - m_vHor[s->x - 1][y];                      /* index of left edge of old empty row */
+   
+  for(y = s->y; y < (Int) (s->y + s->m_nHeight); y++) {         // for each row occupied by placement
+    horz = m_vHor[s->x][y];                                     // old width of horizontal strip
+    if(s->x >= 1 && empty((Int) (s->x - 1), y))                 // row has at least one empty position to left
+      left = s->x - m_vHor[s->x - 1][y];                        // index of left edge of old empty row
     else left = s->x;
-    for (x = left; x < (Int) s->x; x++)                       /* for each cell of row to left */
-      m_vHor[x][y] = horz;                                    /* new horizontal width of row */
-    for (x = s->x + s->m_nWidth; x <= left + horz - 1; x++)   /* each cell of column */
+    for (x = left; x < (Int) s->x; x++)                         // for each cell of row to left
+      m_vHor[x][y] = horz;                                      // new horizontal width of row
+    for (x = s->x + s->m_nWidth; x <= left + horz - 1; x++)     // each cell of column
       m_vHor[x][y] = horz;
   }
 }
 
 void Grid::add(const Rectangle* s, std::vector<Int>& v) {
   Int x, y;
-  Int run;                                                       /* length of horizontal or vertical run of empty space */
+  Int run;                                                       // length of horizontal or vertical run of empty space
 
-  for (x = (Int) s->x; x < (Int) (s->x + s->m_nWidth); x++)      /* for each column occupied by square */
-    for (y = (Int) s->y; y < (Int) (s->y + s->m_nHeight); y++) { /* for each row occupied by square */
-      operator[](x)[y] = s->m_nID;                               /* fill in square */
+  for (x = (Int) s->x; x < (Int) (s->x + s->m_nWidth); x++)      // for each column occupied by square
+    for (y = (Int) s->y; y < (Int) (s->y + s->m_nHeight); y++) { // for each row occupied by square
+      operator[](x)[y] = s->m_nID;                               // fill in square
       if (m_vVer[x][y] <= m_vHor[x][y])
-	v[m_vVer[x][y]]--;                                       /* remove old value */
+	v[m_vVer[x][y]]--;                                       // remove old value
       else
-	v[m_vHor[x][y]]--;                                       /* remove old value */
+	v[m_vHor[x][y]]--;                                       // remove old value
     }
 
-  /* update vertical grid above placement */
-  for (x = (Int) s->x; x < (Int) (s->x + s->m_nWidth); x++) {    /* for each column occupied by placement */
-    run = 0;                                                     /* no run yet */
-    for(y = s->y - 1; y >= 0; y--)                               /* go up column above placement */
-      if(empty(x, y)) run++;                                     /* cell is empty, continue run */
-      else break;                                                /* cell is occupied, vertical run is over */
-    for (y = y + 1; y < (Int) s->y; y++) {                       /* for each cell of empty run */
-      if (run < (Int) m_vHor[x][y]) {                            /* new vertical strip < horizontal strip */
-	if (m_vVer[x][y] <= m_vHor[x][y]) v[m_vVer[x][y]]--;     /* remove old value */
-	else v[m_vHor[x][y]]--;                                  /* remove old value */
-	v[run]++;}                                               /* insert new value */
-      m_vVer[x][y] = run;                                        /* new height of vertical strip */
+  // update vertical grid above placement
+  for (x = (Int) s->x; x < (Int) (s->x + s->m_nWidth); x++) {    // for each column occupied by placement
+    run = 0;                                                     // no run yet
+    for(y = s->y - 1; y >= 0; y--)                               // go up column above placement
+      if(empty(x, y)) run++;                                     // cell is empty, continue run
+      else break;                                                // cell is occupied, vertical run is over
+    for (y = y + 1; y < (Int) s->y; y++) {                       // for each cell of empty run
+      if (run < (Int) m_vHor[x][y]) {                            // new vertical strip < horizontal strip
+	if (m_vVer[x][y] <= m_vHor[x][y]) v[m_vVer[x][y]]--;     // remove old value
+	else v[m_vHor[x][y]]--;                                  // remove old value
+	v[run]++;}                                               // insert new value
+      m_vVer[x][y] = run;                                        // new height of vertical strip
     }
-    /* update vertical grid below placement */
-    run = m_vVer[x][s->y] - run - s->m_nHeight;                  /* run below is previous - above - rectangle*/
+
+    // update vertical grid below placement
+    run = m_vVer[x][s->y] - run - s->m_nHeight;                  // run below is previous - above - rectangle
     for (y = (Int) (s->y + s->m_nHeight + run - 1);
-	 y >= (Int) (s->y + s->m_nHeight); y--) {                /* for each cell of empty run */
-      if (run < (Int) m_vHor[x][y]) {                            /* new vertical strip < horizontal strip */
-	if (m_vVer[x][y] <= m_vHor[x][y]) v[m_vVer[x][y]]--;     /* remove old value */
-	else v[m_vHor[x][y]]--;                                  /* remove old value */
-	v[run]++;                                                /* insert new value */
+	 y >= (Int) (s->y + s->m_nHeight); y--) {                // for each cell of empty run
+      if (run < (Int) m_vHor[x][y]) {                            // new vertical strip < horizontal strip
+	if (m_vVer[x][y] <= m_vHor[x][y]) v[m_vVer[x][y]]--;     // remove old value
+	else v[m_vHor[x][y]]--;                                  // remove old value
+	v[run]++;                                                // insert new value
       }
-      m_vVer[x][y] = run;                                        /* new height of vertical strip */
+      m_vVer[x][y] = run;                                        // new height of vertical strip
     }
   }
-  /* update horizontal grid left of placement */
-  for(y = (Int) s->y; y < (Int) (s->y + s->m_nHeight); y++) {    /* for each row occupied by placement */
-    run = 0;                                                     /* no run yet */
-    for(x = s->x - 1; x >= 0; x--)                               /* go left of placement */
-      if(empty(x, y)) run++;                                     /* cell is empty, continue run */
-      else break;                                                /* cell is occupied, vertical run is over */
-    for(x = x + 1; x < (Int) s->x; x++) {                        /* for each cell of empty run */
-      if(run < (Int) m_vVer[x][y]) {                             /* new horizontal strip < vertical strip */
-	if (m_vVer[x][y] <= m_vHor[x][y]) v[m_vVer[x][y]]--;     /* remove old value */
-	else v[m_vHor[x][y]]--;                                  /* remove old value */
-	v[run]++;                                                /* insert new value */
+
+  // update horizontal grid left of placement
+  for(y = (Int) s->y; y < (Int) (s->y + s->m_nHeight); y++) {    // for each row occupied by placement
+    run = 0;                                                     // no run yet
+    for(x = s->x - 1; x >= 0; x--)                               // go left of placement
+      if(empty(x, y)) run++;                                     // cell is empty, continue run
+      else break;                                                // cell is occupied, vertical run is over
+    for(x = x + 1; x < (Int) s->x; x++) {                        // for each cell of empty run
+      if(run < (Int) m_vVer[x][y]) {                             // new horizontal strip < vertical strip
+	if (m_vVer[x][y] <= m_vHor[x][y]) v[m_vVer[x][y]]--;     // remove old value
+	else v[m_vHor[x][y]]--;                                  // remove old value
+	v[run]++;                                                // insert new value
       }
-      m_vHor[x][y] = run;                                        /* new height of vertical strip */
+      m_vHor[x][y] = run;                                        // new height of vertical strip
     }
-    /* update horizontal grid right of placement */
-    run = (Int) (m_vHor[s->x][y] - run - s->m_nWidth);           /* run right is previous - left - rectangle*/
+
+    // update horizontal grid right of placement
+    run = (Int) (m_vHor[s->x][y] - run - s->m_nWidth);           // run right is previous - left - rectangle
     for(x = (Int) (s->x + s->m_nWidth + run - 1);
-	x >= (Int) (s->x + s->m_nWidth); x--) {                  /* for each cell of empty run */
-      if(run < (Int) m_vVer[x][y]) {                             /* new horizontal strip < vertical strip */
-	if (m_vVer[x][y] <= m_vHor[x][y]) v[m_vVer[x][y]]--;     /* remove old value */
-	else v[m_vHor[x][y]]--;                                  /* remove old value */
-	v[run]++;}                                               /* insert new value */
-      m_vHor[x][y] = run;                                        /* new height of vertical strip */
+	x >= (Int) (s->x + s->m_nWidth); x--) {                  // for each cell of empty run
+      if(run < (Int) m_vVer[x][y]) {                             // new horizontal strip < vertical strip
+	if (m_vVer[x][y] <= m_vHor[x][y]) v[m_vVer[x][y]]--;     // remove old value
+	else v[m_vHor[x][y]]--;                                  // remove old value
+	v[run]++;}                                               // insert new value
+      m_vHor[x][y] = run;                                        // new height of vertical strip
     }
   }
 }
 
 void Grid::add(const Rectangle* s) {
   Int x, y;
-  Int run;              /* length of horizontal or vertical run of empty space */
+  Int run;              // length of horizontal or vertical run of empty space
 
-  for (x = (Int) s->x; x < (Int) (s->x + s->m_nWidth); x++)      /* for each column occupied by square */
+  for (x = (Int) s->x; x < (Int) (s->x + s->m_nWidth); x++)      // for each column occupied by square
     for (y = (Int) s->y; y < (Int) (s->y + s->m_nHeight); y++)
       operator[](x)[y] = s->m_nID;
-  /* update vertical grid above placement */
-  for (x = (Int) s->x; x < (Int) (s->x + s->m_nWidth); x++) {    /* for each column occupied by placement */
-    run = 0;                                                     /* no run yet */
-    for (y = s->y-1; y >= 0; y--)                                /* go up column above placement */
-      if(empty(x, y)) run++;                                     /* cell is empty, continue run */
-      else break;                                                /* cell is occupied, vertical run is over */
+
+  // update vertical grid above placement
+  for (x = (Int) s->x; x < (Int) (s->x + s->m_nWidth); x++) {    // for each column occupied by placement
+    run = 0;                                                     // no run yet
+    for (y = s->y-1; y >= 0; y--)                                // go up column above placement
+      if(empty(x, y)) run++;                                     // cell is empty, continue run
+      else break;                                                // cell is occupied, vertical run is over
     for (y = y + 1; y < (Int) s->y; y++)
-      m_vVer[x][y] = run;                                        /* new height of vertical strip */
-    /* update vertical grid below placement */
-    run = (Int) (m_vVer[x][s->y] - run - s->m_nHeight);          /* run below is previous - above - rectangle*/
+      m_vVer[x][y] = run;                                        // new height of vertical strip
+
+    // update vertical grid below placement
+    run = (Int) (m_vVer[x][s->y] - run - s->m_nHeight);          // run below is previous - above - rectangle
     for(y = (Int) (s->y + s->m_nHeight + run - 1);
 	y >= (Int) (s->y + s->m_nHeight); y--)
-      m_vVer[x][y] = run;                                        /* new height of vertical strip */
+      m_vVer[x][y] = run;                                        // new height of vertical strip
   }
-  /* update horizontal grid left of placement */
-  for(y = (Int) s->y; y < (Int) (s->y + s->m_nHeight); y++) {    /* for each row occupied by placement */
-    run = 0;                                                     /* no run yet */
-    for(x = s->x - 1; x >= 0; x--)                               /* go left of placement */
-      if(empty(x, y)) run++;                                     /* cell is empty, continue run */
-      else break;                                                /* cell is occupied, vertical run is over */
+
+  // update horizontal grid left of placement
+  for(y = (Int) s->y; y < (Int) (s->y + s->m_nHeight); y++) {    // for each row occupied by placement
+    run = 0;                                                     // no run yet
+    for(x = s->x - 1; x >= 0; x--)                               // go left of placement
+      if(empty(x, y)) run++;                                     // cell is empty, continue run
+      else break;                                                // cell is occupied, vertical run is over
     for(x = x + 1; x < (Int) s->x; x++)
-      m_vHor[x][y] = run;                                        /* new height of vertical strip */
-    /* update horizontal grid right of placement */
-    run = m_vHor[s->x][y] - run - s->m_nWidth;                   /* run right is previous - left - rectangle*/
+      m_vHor[x][y] = run;                                        // new height of vertical strip
+
+    // update horizontal grid right of placement
+    run = m_vHor[s->x][y] - run - s->m_nWidth;                   // run right is previous - left - rectangle
     for(x = (Int) (s->x + s->m_nWidth + run - 1);
 	x >= (Int) (s->x + s->m_nWidth); x--)
-      m_vHor[x][y] = run;                                        /* new height of vertical strip */
+      m_vHor[x][y] = run;                                        // new height of vertical strip
   }
 }
 
@@ -213,44 +219,47 @@ void Grid::add(Component* c) {
    */
 
   Int x, y;
-  Int run;              /* length of horizontal or vertical run of empty space */
+  Int run;              // length of horizontal or vertical run of empty space
 
   for(x = c->m_nX; x < (Int) (c->m_nX + c->m_Dims.m_nWidth); ++x)
     std::fill(operator[](x).begin() + c->m_nY,
 	      operator[](x).begin() + c->m_nY + c->m_Dims.m_nHeight,
 	      c->m_nID);
 
-  /* update vertical grid above placement */
-  for(x = (Int) c->m_nX; x < (Int) (c->m_nX + c->m_Dims.m_nWidth); ++x) {    /* for each column occupied by placement */
-    run = 0;                                                                 /* no run yet */
-    for (y = c->m_nY - 1; y >= 0; --y)                                       /* go up column above placement */
-      if(empty(x, y)) ++run;                                                 /* cell is empty, continue run */
-      else break;                                                            /* cell is occupied, vertical run is over */
+  // update vertical grid above placement
+  for(x = (Int) c->m_nX; x < (Int) (c->m_nX + c->m_Dims.m_nWidth); ++x) {    // for each column occupied by placement
+    run = 0;                                                                 // no run yet
+    for (y = c->m_nY - 1; y >= 0; --y)                                       // go up column above placement
+      if(empty(x, y)) ++run;                                                 // cell is empty, continue run
+      else break;                                                            // cell is occupied, vertical run is over
     std::fill(m_vVer[x].begin() + y + 1, m_vVer[x].begin() + c->m_nY, run);  // new height of vertical strip.
-    /* update vertical grid below placement */
-    run = m_vVer[x][c->m_nY] - run - c->m_Dims.m_nHeight;                    /* run below is previous - above - rectangle*/
+
+    // update vertical grid below placement
+    run = m_vVer[x][c->m_nY] - run - c->m_Dims.m_nHeight;                    // run below is previous - above - rectangle
     std::fill(m_vVer[x].begin() + c->m_nY + c->m_Dims.m_nHeight,
 	      m_vVer[x].begin() + c->m_nY + c->m_Dims.m_nHeight + run, run); // new height of vertical strip.
   }
-  /* update horizontal grid left of placement */
-  for(y = (Int) c->m_nY; y < (Int) (c->m_nY + c->m_Dims.m_nHeight); ++y) {   /* for each row occupied by placement */
-    run = 0;                                                                 /* no run yet */
-    for(x = c->m_nX - 1; x >= 0; --x)                                        /* go left of placement */
-      if(empty(x, y)) ++run;                                                 /* cell is empty, continue run */
-      else break;                                                            /* cell is occupied, vertical run is over */
+
+  // update horizontal grid left of placement
+  for(y = (Int) c->m_nY; y < (Int) (c->m_nY + c->m_Dims.m_nHeight); ++y) {   // for each row occupied by placement
+    run = 0;                                                                 // no run yet
+    for(x = c->m_nX - 1; x >= 0; --x)                                        // go left of placement
+      if(empty(x, y)) ++run;                                                 // cell is empty, continue run
+      else break;                                                            // cell is occupied, vertical run is over
     for(x = x + 1; x < (Int) c->m_nX; ++x)
-      m_vHor[x][y] = run;                                                    /* new height of vertical strip */
-    /* update horizontal grid right of placement */
-    run = m_vHor[c->m_nX][y] - run - c->m_Dims.m_nWidth;                     /* run right is previous - left - rectangle*/
+      m_vHor[x][y] = run;                                                    // new height of vertical strip
+
+    // update horizontal grid right of placement
+    run = m_vHor[c->m_nX][y] - run - c->m_Dims.m_nWidth;                     // run right is previous - left - rectangle
     for(x = (Int) c->m_nX + c->m_Dims.m_nWidth + run - 1;
 	x >= (Int) (c->m_nX + c->m_Dims.m_nWidth); --x)
-      m_vHor[x][y] = run;                                                    /* new height of vertical strip */
+      m_vHor[x][y] = run;                                                    // new height of vertical strip
   }
 }
 
 void Grid::add(Component* c, std::vector<Int>& v) {
   Int x, y;
-  Int run;              /* length of horizontal or vertical run of empty space */
+  Int run;              // length of horizontal or vertical run of empty space
 
   for(x = c->m_nX; x < (Int) (c->m_nX + c->m_Dims.m_nWidth); ++x)
     for (y = c->m_nY; y < (Int) (c->m_nY + c->m_Dims.m_nHeight); ++y) {
@@ -261,63 +270,66 @@ void Grid::add(Component* c, std::vector<Int>& v) {
 	--v[m_vHor[x][y]];
     }
   
-  for(x = (Int) c->m_nX; x < (Int) (c->m_nX + c->m_Dims.m_nWidth); ++x) {    /* for each column occupied by placement */
-    run = 0;                                                                 /* no run yet */
-    for(y = c->m_nY - 1; y >= 0; y--)                                        /* go up column above placement */
-      if(empty(x, y)) run++;                                                 /* cell is empty, continue run */
-      else break;                                                            /* cell is occupied, vertical run is over */
-    for (y = y + 1; y < (Int) c->m_nY; ++y) {                                /* for each cell of empty run */
-      if(run < (Int) m_vHor[x][y]) {                                         /* new vertical strip < horizontal strip */
-	if (m_vVer[x][y] <= m_vHor[x][y]) --v[m_vVer[x][y]];                 /* remove old value */
-	else --v[m_vHor[x][y]];                                              /* remove old value */
-	++v[run];}                                                           /* insert new value */
-      m_vVer[x][y] = run;                                                    /* new height of vertical strip */
+  for(x = (Int) c->m_nX; x < (Int) (c->m_nX + c->m_Dims.m_nWidth); ++x) {    // for each column occupied by placement
+    run = 0;                                                                 // no run yet
+    for(y = c->m_nY - 1; y >= 0; y--)                                        // go up column above placement
+      if(empty(x, y)) run++;                                                 // cell is empty, continue run
+      else break;                                                            // cell is occupied, vertical run is over
+    for (y = y + 1; y < (Int) c->m_nY; ++y) {                                // for each cell of empty run
+      if(run < (Int) m_vHor[x][y]) {                                         // new vertical strip < horizontal strip
+	if (m_vVer[x][y] <= m_vHor[x][y]) --v[m_vVer[x][y]];                 // remove old value
+	else --v[m_vHor[x][y]];                                              // remove old value
+	++v[run];}                                                           // insert new value
+      m_vVer[x][y] = run;                                                    // new height of vertical strip
     }
-    /* update vertical grid below placement */
-    run = m_vVer[x][c->m_nY] - run - c->m_Dims.m_nHeight;                    /* run below is previous - above - rectangle*/
+
+    // update vertical grid below placement
+    run = m_vVer[x][c->m_nY] - run - c->m_Dims.m_nHeight;                    // run below is previous - above - rectangle
     for(y = (Int) c->m_nY + c->m_Dims.m_nHeight + run - 1;
-	y >= (Int) (c->m_nY + c->m_Dims.m_nHeight); --y) {                   /* for each cell of empty run */
-      if(run < (Int) m_vHor[x][y]) {                                         /* new vertical strip < horizontal strip */
-	if(m_vVer[x][y] <= m_vHor[x][y]) --v[m_vVer[x][y]];                  /* remove old value */
-	else --v[m_vHor[x][y]];                                              /* remove old value */
-	++v[run];                                                            /* insert new value */
+	y >= (Int) (c->m_nY + c->m_Dims.m_nHeight); --y) {                   // for each cell of empty run
+      if(run < (Int) m_vHor[x][y]) {                                         // new vertical strip < horizontal strip
+	if(m_vVer[x][y] <= m_vHor[x][y]) --v[m_vVer[x][y]];                  // remove old value
+	else --v[m_vHor[x][y]];                                              // remove old value
+	++v[run];                                                            // insert new value
       }
-      m_vVer[x][y] = run;                                                    /* new height of vertical strip */
+      m_vVer[x][y] = run;                                                    // new height of vertical strip
     }
   }
-  /* update horizontal grid left of placement */
-  for(y = (Int) c->m_nY; y < (Int) (c->m_nY + c->m_Dims.m_nHeight); ++y) {   /* for each row occupied by placement */
-    run = 0;                                                                 /* no run yet */
-    for(x = c->m_nX - 1; x >= 0; --x)                                        /* go left of placement */
-      if(empty(x, y)) ++run;                                                 /* cell is empty, continue run */
-      else break;                                                            /* cell is occupied, vertical run is over */
-    for(x = x + 1; x < (Int) c->m_nX; ++x) {                                 /* for each cell of empty run */
-      if(run < (Int) m_vVer[x][y]) {                                         /* new horizontal strip < vertical strip */
-	if(m_vVer[x][y] <= m_vHor[x][y]) --v[m_vVer[x][y]];                  /* remove old value */
-	else --v[m_vHor[x][y]];                                              /* remove old value */
-	++v[run];                                                            /* insert new value */
+
+  // update horizontal grid left of placement
+  for(y = (Int) c->m_nY; y < (Int) (c->m_nY + c->m_Dims.m_nHeight); ++y) {   // for each row occupied by placement
+    run = 0;                                                                 // no run yet
+    for(x = c->m_nX - 1; x >= 0; --x)                                        // go left of placement
+      if(empty(x, y)) ++run;                                                 // cell is empty, continue run
+      else break;                                                            // cell is occupied, vertical run is over
+    for(x = x + 1; x < (Int) c->m_nX; ++x) {                                 // for each cell of empty run
+      if(run < (Int) m_vVer[x][y]) {                                         // new horizontal strip < vertical strip
+	if(m_vVer[x][y] <= m_vHor[x][y]) --v[m_vVer[x][y]];                  // remove old value
+	else --v[m_vHor[x][y]];                                              // remove old value
+	++v[run];                                                            // insert new value
       }
-      m_vHor[x][y] = run;                                                    /* new height of vertical strip */
+      m_vHor[x][y] = run;                                                    // new height of vertical strip
     }
-    /* update horizontal grid right of placement */
-    run = m_vHor[c->m_nX][y] - run - c->m_Dims.m_nWidth;                     /* run right is previous - left - rectangle*/
+
+    // update horizontal grid right of placement
+    run = m_vHor[c->m_nX][y] - run - c->m_Dims.m_nWidth;                     // run right is previous - left - rectangle
     for(x = (Int) c->m_nX + c->m_Dims.m_nWidth + run - 1;
-	x >= (Int) (c->m_nX + c->m_Dims.m_nWidth); --x) {                    /* for each cell of empty run */
-      if(run < (Int) m_vVer[x][y]) {                                         /* new horizontal strip < vertical strip */
-	if(m_vVer[x][y] <= m_vHor[x][y]) --v[m_vVer[x][y]];                  /* remove old value */
-	else --v[m_vHor[x][y]];                                              /* remove old value */
-	++v[run];}                                                           /* insert new value */
-      m_vHor[x][y] = run;                                                    /* new height of vertical strip */
+	x >= (Int) (c->m_nX + c->m_Dims.m_nWidth); --x) {                    // for each cell of empty run
+      if(run < (Int) m_vVer[x][y]) {                                         // new horizontal strip < vertical strip
+	if(m_vVer[x][y] <= m_vHor[x][y]) --v[m_vVer[x][y]];                  // remove old value
+	else --v[m_vHor[x][y]];                                              // remove old value
+	++v[run];}                                                           // insert new value
+      m_vHor[x][y] = run;                                                    // new height of vertical strip
     }
   }
 }
 
 void Grid::del(Component* c) {
 
-  Int x, y;       /* coordinates of the grid to test */
-  Int horz, vert; /* old horizontal width and vertical height */
-  Int top;        /* y index of top of old empty strip */
-  Int left;       /* x index of left-most cell of old empty strip */
+  Int x, y;       // coordinates of the grid to test
+  Int horz, vert; // old horizontal width and vertical height
+  Int top;        // y index of top of old empty strip
+  Int left;       // x index of left-most cell of old empty strip
 
   /**
    * Undraw the component's outline.
@@ -328,10 +340,10 @@ void Grid::del(Component* c) {
 	      operator[](x).begin() + c->m_nY + c->m_Dims.m_nHeight,
 	      GRIDEMPTY);
 
-  for(x = c->m_nX; x < (Int) (c->m_nX + c->m_Dims.m_nWidth); ++x) {          /* each column occupied by placement */
-    vert = m_vVer[x][c->m_nY];                                               /* old height of vertical strip */
-    if(c->m_nY >= 1 && empty(x, (Int) (c->m_nY - 1)))                        /* column has at least one empty position above*/
-      top = (Int) c->m_nY - m_vVer[x][c->m_nY - 1];                          /* index of top of old vertical strip */
+  for(x = c->m_nX; x < (Int) (c->m_nX + c->m_Dims.m_nWidth); ++x) {          // each column occupied by placement
+    vert = m_vVer[x][c->m_nY];                                               // old height of vertical strip
+    if(c->m_nY >= 1 && empty(x, (Int) (c->m_nY - 1)))                        // column has at least one empty position above
+      top = (Int) c->m_nY - m_vVer[x][c->m_nY - 1];                          // index of top of old vertical strip
     else top = c->m_nY;
 
     /**
@@ -348,14 +360,14 @@ void Grid::del(Component* c) {
    * component.
    */
 
-  for (y = c->m_nY; y < (Int) (c->m_nY + c->m_Dims.m_nHeight); ++y) {        /* for each row occupied by placement */
-    horz = m_vHor[c->m_nX][y];                                               /* old width of horizontal strip */
-    if(c->m_nX >= 1 && empty((Int) (c->m_nX - 1), y))                        /* row has at least one empty position to left*/
-      left = c->m_nX - m_vHor[c->m_nX - 1][y];                               /* index of left edge of old empty row */
+  for (y = c->m_nY; y < (Int) (c->m_nY + c->m_Dims.m_nHeight); ++y) {        // for each row occupied by placement
+    horz = m_vHor[c->m_nX][y];                                               // old width of horizontal strip
+    if(c->m_nX >= 1 && empty((Int) (c->m_nX - 1), y))                        // row has at least one empty position to left
+      left = c->m_nX - m_vHor[c->m_nX - 1][y];                               // index of left edge of old empty row
     else left = c->m_nX;
-    for(x = left; x < (Int) c->m_nX; ++x)                                    /* for each cell of row to left */
-      m_vHor[x][y] = horz;                                                   /* new horizontal width of row */
-    for(x = c->m_nX + c->m_Dims.m_nWidth; x <= left + horz - 1; ++x)         /* each cell of column */
+    for(x = left; x < (Int) c->m_nX; ++x)                                    // for each cell of row to left
+      m_vHor[x][y] = horz;                                                   // new horizontal width of row
+    for(x = c->m_nX + c->m_Dims.m_nWidth; x <= left + horz - 1; ++x)         // each cell of column
       m_vHor[x][y] = horz;
   }
 }
@@ -372,7 +384,7 @@ void Grid::printid() const {
     for(UInt x = 0; x < m_Box.m_nWidth; ++x)
       if(empty(x, y))
 	std::cout << " .";
-      else 
+      else
 	std::cout << std::setw(2) << (Int) get(x, y);
     std::cout << std::endl;
   }
@@ -398,7 +410,7 @@ void Grid::printAux(const std::vector<std::vector<UInt> >& v) const {
     for(UInt x = 0; x < m_Box.m_nWidth; x++)
       if(v[x][y] == GRIDEMPTY)
 	std::cout << " .";
-      else 
+      else
 	std::cout << std::setw(2) << std::setfill(' ') << v[x][y];
     std::cout << std::endl;
   }
@@ -409,7 +421,7 @@ void Grid::printRaw(const std::vector<std::vector<UInt> >& v) const {
     for(UInt x = 0; x < m_Box.m_nWidth; x++)
       if(v[x][y] == 0)
 	std::cout << " .";
-      else 
+      else
 	std::cout << std::setw(2) << (Int) v[x][y];
     std::cout << std::endl;
   }
