@@ -261,7 +261,7 @@ void Rectangle::fix(const Fixed& f) {
 }
 
 void Rectangle::rotate() {
-  DimsFunctor *pRotator, *pTmpRotation;
+  DimsFunctor *pRotator;
   UInt height, length;
   
   pRotator = m_pRotation->rotator ();
