@@ -39,7 +39,6 @@ Rectangle::Rectangle() :
 }
 
 Rectangle::~Rectangle() {
-  delete m_pRotation;
 }
 
 void Rectangle::initialize(const UInt& nSize) {
@@ -51,11 +50,11 @@ void Rectangle::initialize(const UInt& nWidth, const UInt& nHeight, const UInt& 
   m_nHeight = nHeight;
   m_nLength = nLength;
   m_nArea = m_nWidth * m_nHeight * m_nLength;
-  m_nMinDim = std::min(nWidth, std::min (nHeight, nLength));
-  m_nMaxDim = std::max(nWidth, std::max (nHeight, nLength));
+  m_nMinDim = std::min(nWidth, std::min(nHeight, nLength));
+  m_nMaxDim = std::max(nWidth, std::max(nHeight, nLength));
   m_bSquare = (m_nWidth == m_nHeight && m_nWidth == m_nLength);
   if(m_bSquare) m_bRotatable = false;
-  m_pRotation = new WidthHeightLength (); // Initial rotation is a 1:1 mapping.
+  m_pRotation = WidthHeightLength::get(); // Initial rotation is a 1:1 mapping.
 }
 
 void Rectangle::initialize(const RDimensions& d) {
@@ -271,12 +270,8 @@ void Rectangle::rotate() {
   m_nWidth = pRotator->d1(this);
   m_nHeight = height;
   m_nLength = length;
-  delete pRotator;
 
-  pTmpRotation = m_pRotation->rotate ();
-  delete m_pRotation;
-  m_pRotation = pTmpRotation;
-
+  m_pRotation = m_pRotation->rotate ();
   m_bRotated = m_pRotation->isRotated ();
 }
 
