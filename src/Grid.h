@@ -51,12 +51,11 @@ class Grid : public std::vector<std::vector<std::vector<UInt> > > {
    */
 
   void draw(Int x, Int dx, Int y, Int dy, Int z, Int dz, UInt id) {
-    for(Int i = x; i < x + dx; ++i) {
-      std::vector<std::vector<UInt> > vy = operator[](i);
-      for(Int j = y; j < y + dy; ++j)
-	std::fill(vy[i].begin() + z,
-		  vy[i].begin() + z + dz, id);
-    }
+    for(Int j = z; j < z + dz; ++j) {
+      std::vector<std::vector<UInt> > vx = operator[](i);
+      for(Int i = x; i < x + dx; ++i)
+	std::fill(vx[i].begin() + y,
+		  vx[i].begin() + y + dy, id);
   };
 
   /**
@@ -72,7 +71,7 @@ class Grid : public std::vector<std::vector<std::vector<UInt> > > {
    * accommodating size there are.
    */
 
-  void add(const Rectangle* s, std::vector<Int>& v);
+  void add(const Rectangle* s, std::vector<std::vector<Int> >& v);
 
   /**
    * Places the square in the location on the grid and updates the
@@ -84,7 +83,7 @@ class Grid : public std::vector<std::vector<std::vector<UInt> > > {
 
   void add(const Rectangle* s);
   void add(Component* c);
-  void add(Component* c, std::vector<Int>& v);
+  void add(Component* c, std::vector<std::vector<Int> >& v);
   void addSimple(const Rectangle* r) {
     draw(r->x, r->m_nWidth, r->y, r->m_nHeight, r->z, r->m_nLength, r->m_nID);
   };
@@ -93,23 +92,23 @@ class Grid : public std::vector<std::vector<std::vector<UInt> > > {
   void del(const Rectangle* s);
   void del(Component* c);
   bool empty(const ICoords& c) const {
-    return(operator[](c.x).operator[](c.y).operator[](c.z) == GRIDEMPTY);
+    return(operator[](c.z).operator[](c.x).operator[](c.y) == GRIDEMPTY);
   }
 
   bool empty(Int x, Int y, Int z) const {
-    return(operator[](x).operator[](y).operator[](z) == GRIDEMPTY);
+    return(operator[](z).operator[](x).operator[](y) == GRIDEMPTY);
   }
 
   bool empty(UInt x, UInt y, UInt z) const {
-    return(operator[](x).operator[](y).operator[](z) == GRIDEMPTY);
+    return(operator[](z).operator[](x).operator[](y) == GRIDEMPTY);
   }
 
   bool empty(Int x, UInt y, UInt z) const {
-    return(operator[](x).operator[](y).operator[](z) == GRIDEMPTY);
+    return(operator[](z).operator[](x).operator[](y) == GRIDEMPTY);
   }
 
   bool empty(UInt x, Int y, Int z) const {
-    return(operator[](x).operator[](y).operator[](z) == GRIDEMPTY);
+    return(operator[](z).operator[](x).operator[](y) == GRIDEMPTY);
   }
 
   bool empty(Int x, Int xWidth, Int y, Int yWidth, Int z, Int zWidth) {
@@ -140,11 +139,11 @@ class Grid : public std::vector<std::vector<std::vector<UInt> > > {
   }
 
   UInt get(const ICoords& c) const {
-    return(operator[](c.x)[c.y][c.z]);
+    return(operator[](c.z)[c.x][c.y]);
   };
   
   UInt get(Int x, Int y, Int z) const {
-    return(operator[](x)[y][z]);
+    return(operator[](z)[x][y]);
   };
 
   UInt& get(Int x, Int y, Int z) {
@@ -176,7 +175,7 @@ class Grid : public std::vector<std::vector<std::vector<UInt> > > {
   }
 
   bool occupied(Int x, Int y, Int z) const {
-    return(operator[](x).operator[](y).operator[](z) != GRIDEMPTY);
+    return(operator[](z).operator[](x).operator[](y) != GRIDEMPTY);
   };
 
   /**
@@ -248,14 +247,14 @@ class Grid : public std::vector<std::vector<std::vector<UInt> > > {
   std::vector<std::vector<UInt> > m_vLon;
 
  protected:
-  void resize(Int n, const std::vector<UInt>& v);
+  void resize(Int n, const std::vector<std::vector<UInt> >& v);
 
   const Packer* m_pPacker;
   BoxDimensions m_Box;
 
  private:
-  void printAux(const std::vector<std::vector<UInt> >& v) const;
-  void printRaw(const std::vector<std::vector<UInt> >& v) const;
+  void printAux(const std::vector<std::vector<std::vector <UInt> > >& v) const;
+  void printRaw(const std::vector<std::vector<std::vector <UInt> > >& v) const;
 };
 
 #endif // GRID_H
