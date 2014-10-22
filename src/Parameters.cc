@@ -278,11 +278,13 @@ void Parameters::parseGeometry(const std::string& s) {
    * Define some range.
    */
 
-  size_t w, h;
+  size_t w, h, l;
   bParsed = parse(s.c_str(),
 		  uint_p[assign_a(w)] >>
 		  ch_p('x') >>
-		  uint_p[assign_a(h)]).full;
+		  uint_p[assign_a(h)] >>
+		  ch_p('x') >>
+		  uint_p[assign_a(l)]).full;
   if(bParsed) return;
 
   std::cout << "I don't understand your geometry specification: "
@@ -311,14 +313,17 @@ void Parameters::parseFix(const std::string& s) {
   if(s.empty()) return;
   using namespace boost::spirit::classic;
   Fixed f;
-  rule<> wxh = (uint_p[assign_a(f.m_nWidth)] >>
-		ch_p('x') >>
-		uint_p[assign_a(f.m_nHeight)] >>
-		ch_p('=') >> ch_p('(') >>
-		uint_p[assign_a(f.m_nX)] >> ch_p(',') >>
-		uint_p[assign_a(f.m_nY)] >> ch_p(')'))
-    [push_back_a(m_vFixed, f)];
-  bool bParsed = parse(s.c_str(), wxh >> *(ch_p(',') >> wxh)).full;
+  rule<> wxhxl = (uint_p[assign_a(f.m_nWidth)] >>
+		  ch_p('x') >>
+		  uint_p[assign_a(f.m_nHeight)] >>
+		  ch_p('x') >>
+		  uint_p[assign_a(f.m_nLength)] >>
+		  ch_p('=') >> ch_p('(') >>
+		  uint_p[assign_a(f.m_nX)] >> ch_p(',') >>
+		  uint_p[assign_a(f.m_nY)] >> ch_p(',') >>
+		  uint_p[assign_a(f.m_nZ)] >> ch_p(')'))
+	  [push_back_a(m_vFixed, f)];
+  bool bParsed = parse(s.c_str(), wxhxl >> *(ch_p(',') >> wxhxl)).full;
   if(!bParsed) {
     std::cout << "I don't understand your fixed items specification: "
 	      << s << std::endl;
