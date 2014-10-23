@@ -435,6 +435,34 @@ void Rectangle::unscale(const URational& ur) {
   m_nArea = m_nHeight * m_nWidth;
 }
 
+UInt Rectangle::minDim23(const UInt& nMax,
+			 const DimsFunctor* pDims,
+			 const Rectangle* pRect) const {
+  UInt nMin (std::numeric_limits<UInt>::max());
+
+  Rectangle rect = *pRect;    // copies
+  Rectangle thisRect = *this;
+
+  int i, j;
+  for (i = 0; i < NUM_ROTATIONS; i++) {
+    for (j = 0; j < NUM_ROTATIONS; j++) {
+      nMin = std::min(nMin, std::min (pDims->d2(thisRect) + pDims->d2(rect), 
+				      pDims->d3(thisRect) + pDims->d3(rect)));
+      if(pDims->d1(thisRect) + pDims->d1(rect) <= nMax)
+	nMin = std::min(nMin, std::min (std::max(pDims->d2(thisRect), pDims->d2(rect)), 
+					std::max(pDims->d3(thisRect), pDims->d3(rect))));
+      if(!rect.m_bRotatable)
+	break;
+      rect.rotate();
+    }
+    if(!m_bRotatable)
+      break;
+    thisRect.rotate();
+  }
+
+  return(nMin);
+}
+
 UInt Rectangle::minDim2(const UInt& nMax,
 			const DimsFunctor* pDims,
 			const Rectangle* pRect) const {

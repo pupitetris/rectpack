@@ -112,6 +112,12 @@ class Rectangle {
    * including consideration of all rotations of the other rectangle.
    */
 
+  // Port where the "other" dimension is represented by both 2 and 3
+  UInt minDim23(const UInt& nMax,
+		const DimsFunctor* pDims,
+		const Rectangle* pRect) const;
+
+  // Port where we define which dimension is going to be the "other" (either 2 or 3)
   UInt minDim2(const UInt& nMax,
 	       const DimsFunctor* pDims,
 	       const Rectangle* pRect) const;

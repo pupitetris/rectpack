@@ -116,6 +116,12 @@ class RDimensions {
    * @return a minimum height.
    */
 
+  // Port where the "other" dimension is represented by both 2 and 3
+  URational minDim23(const URational& nMax, const RDimensions& r,
+		     const DimsFunctor* pDims1,
+		     const DimsFunctor* pDims2) const;
+
+  // Port where we define which dimension is going to be the "other" (either 2 or 3)
   URational minDim2(const URational& nMax, const RDimensions& r,
 		    const DimsFunctor* pDims1,
 		    const DimsFunctor* pDims2) const;

@@ -264,6 +264,18 @@ const URational& RDimensions::maxDim() const {
   return(std::max(m_nWidth, m_nHeight, m_nLength));
 }
 
+URational RDimensions::minDim23(const URational& nMax,
+				const RDimensions& r,
+				const DimsFunctor* pDims1,
+				const DimsFunctor* pDims2) const {
+  if(pDims1->d1(this) + pDims2->d1(r) > nMax)
+    return(std::min(pDims1->d2(this) + pDims2->d2(r), 
+		    pDims1->d3(this) + pDims2->d3(r)));
+  else
+    return(std::min(std::max(pDims1->d2(this), pDims2->d2(r)),
+		    std::max(pDims1->d2(this), pDims2->d2(r))));
+}
+
 URational RDimensions::minDim2(const URational& nMax,
 			       const RDimensions& r,
 			       const DimsFunctor* pDims1,
