@@ -85,9 +85,9 @@ class RDimensions {
    */
 
   bool rotatable(bool bUnoriented) const;
-  void rotateL(); // Rotate on z axis
   void rotateW(); // Rotate on x axis
   void rotateH(); // Rotate on y axis
+  void rotateL(); // Rotate on z axis
   void relax();
   void setArea();
   URational ratioW() const;

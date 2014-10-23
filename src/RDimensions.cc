@@ -222,16 +222,16 @@ bool RDimensions::rotatable(bool bUnoriented) const {
 	  (m_nOrientation == UNORIENTED)));
 }
 
-void RDimensions::rotateL() {
-  std::swap(m_nWidth, m_nHeight);
-}
-
 void RDimensions::rotateW() {
   std::swap(m_nLength, m_nHeight);
 }
 
 void RDimensions::rotateH() {
   std::swap(m_nWidth, m_nLength);
+}
+
+void RDimensions::rotateL() {
+  std::swap(m_nWidth, m_nHeight);
 }
 
 URational RDimensions::ratioW() const {

@@ -25,8 +25,6 @@
 #include "Interval.h"
 #include "Rational.h"
 
-#define NUM_ROTATIONS 6 // Number of possible orientations of an orthogonal figure of N dims is N!
-
 class BoxDimensions;
 class Coordinates;
 class DimsFunctor;

@@ -26,6 +26,7 @@
 #include "RDimensions.h"
 #include "Rectangle.h"
 #include "WidthHeightLength.h"
+#include "DimInfo.h"
 #include <iomanip>
 #include <iostream>
 #include <sstream>
