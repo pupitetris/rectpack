@@ -40,7 +40,10 @@ bool DimsGreater::operator()(const Rectangle& r1,
 			     const Rectangle& r2) const {
   if(m_pDims->d1(r1) != m_pDims->d1(r2))
     return(m_pDims->d1(r1) > m_pDims->d1(r2));
-  else return(m_pDims->d2(r1) > m_pDims->d2(r2));
+  else if(m_pDims->d2(r1) != m_pDims->d2(r2))
+    return(m_pDims->d2(r1) > m_pDims->d2(r2));
+  else 
+    return(m_pDims->d3(r1) > m_pDims->d3(r2));
 }
 
 bool DimsGreater::operator()(const RDimensions* r1,
@@ -52,5 +55,8 @@ bool DimsGreater::operator()(const RDimensions& r1,
 			     const RDimensions& r2) const {
   if(m_pDims->d1(r1) != m_pDims->d1(r2))
     return(m_pDims->d1(r1) > m_pDims->d1(r2));
-  else return(m_pDims->d2(r1) > m_pDims->d2(r2));
+  else if(m_pDims->d2(r1) != m_pDims->d2(r2))
+    return(m_pDims->d2(r1) > m_pDims->d2(r2));
+  else 
+    return(m_pDims->d3(r1) > m_pDims->d3(r2));
 }
