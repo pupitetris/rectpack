@@ -122,12 +122,12 @@ std::ostream& operator<<(std::ostream& os, const RDimensions& d) {
 bool RDimensions::operator<(const RDimensions& d) const {
   if(m_nArea != d.m_nArea)
     return(m_nArea < d.m_nArea);
+  else if(m_nLength != d.m_nLength)
+    return(m_nLength < d.m_nLength);
   else if(m_nWidth != d.m_nWidth)
     return(m_nWidth < d.m_nWidth);
   else if(m_nHeight != d.m_nHeight)
     return(m_nHeight < d.m_nHeight);
-  else if(m_nLength != d.m_nLength)
-    return(m_nLength < d.m_nLength);
   else
     return(m_nOrientation < d.m_nOrientation);
 }
@@ -135,12 +135,12 @@ bool RDimensions::operator<(const RDimensions& d) const {
 bool RDimensions::operator>(const RDimensions& d) const {
   if(m_nArea != d.m_nArea)
     return(m_nArea > d.m_nArea);
+  else if(m_nLength != d.m_nLength)
+    return(m_nLength > d.m_nLength);
   else if(m_nWidth != d.m_nWidth)
     return(m_nWidth > d.m_nWidth);
   else if(m_nHeight != d.m_nHeight)
     return(m_nHeight > d.m_nHeight);
-  else if(m_nLength != d.m_nLength)
-    return(m_nLength > d.m_nLength);
   else
     return(m_nOrientation < d.m_nOrientation);
 }
