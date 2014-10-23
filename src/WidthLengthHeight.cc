@@ -90,7 +90,7 @@ DimsFunctor* WidthLengthHeight::rotate() const {
 }
 
 DimsFunctor* WidthLengthHeight::rotator() const {
-  return(ROT_H::get());
+  return(WidthLengthHeight::get());
 }
 
 DimsFunctor* WidthLengthHeight::shift() const {
