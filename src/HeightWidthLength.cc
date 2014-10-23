@@ -86,11 +86,15 @@ const URational& HeightWidthLength::d3(const RDimensions& r) const {
 }
 
 DimsFunctor* HeightWidthLength::rotate() const {
-  return(HeightLengthWidth::get());
+  return(WidthHeightLenght::get());
 }
 
 DimsFunctor* HeightWidthLength::rotator() const {
-  return(WidthLengthHeight::get());
+  return(ROT_L::get());
+}
+
+DimsFunctor* HeightWidthLength::shift() const {
+  return(WidthLengthHeight::get ());
 }
 
 DimsFunctor* HeightWidthLength::clone() const {
