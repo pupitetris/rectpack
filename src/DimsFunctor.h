@@ -23,6 +23,16 @@
 #include "Integer.h"
 #include "Rational.h"
 
+#define NUM_DIMS 3
+#define NUM_ROTATIONS 6 // Number of possible orthogonal orientations for N dims is N!
+
+#define ROT_W        WidthLengthHeight // Rotates on X axis (swaps L & H)
+#define ROT_H        LengthHeightWidth // Rotates on Y axis (swaps W & L)
+#define ROT_L        HeightWidthLength // Rotates on Z axis (swaps H & W)
+#define ROT_IDENTITY WidthHeightLenght // Rotation that does not modify the original
+#define ROT_SHIFT    HeightLengthWidth // Rotation that shifts all dims to the left
+#define ROT_UNSHIFT  LengthWidthHeight // Rotation that shifts all dims to the right
+
 class DimsFunctor;
 class RDimensions;
 class Rectangle;
@@ -51,6 +61,8 @@ class DimsFunctor {
   virtual DimsFunctor* rotate() const = 0;
   // Rotator is the functor that transforms dimensions from the current to the next.
   virtual DimsFunctor* rotator() const = 0;
+
+  virtual DimsFunctor* shift() const = 0;
 
   virtual bool isRotated();
 
