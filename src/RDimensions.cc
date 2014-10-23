@@ -198,17 +198,21 @@ void RDimensions::initMin() {
   m_nLength = std::numeric_limits<UInt>::min();
 }
 
+bool RDimensions::uEqual(const RDimensions& d) {
+  return((m_nWidth == d.m_nWidth  && m_nHeight == d.m_nHeight && m_nLength == d.m_nLength) ||
+	 (m_nWidth == d.m_nWidth  && m_nHeight == d.m_nLength && m_nLength == d.m_nHeight) ||
+	 (m_nWidth == d.m_nHeight && m_nHeight == d.m_nLength && m_nLength == d.m_nWidth)  ||
+	 (m_nWidth == d.m_nLength && m_nHeight == d.m_nHeight && m_nLength == d.m_nWidth)  ||
+	 (m_nWidth == d.m_nLength && m_nHeight == d.m_nWidth  && m_nLength == d.m_nHeight) ||
+	 (m_nWidth == d.m_nHeight && m_nHeight == d.m_nWidth  && m_nLength == d.m_nLength)));
+}
+
 bool RDimensions::canEqual(const RDimensions& d,
 			   bool bUnoriented) const {
-  if(rotatable(bUnoriented) || d.rotatable(bUnoriented))
-    return((m_nHeight == d.m_nWidth  && m_nWidth == d.m_nHeight && m_nLength == d.m_nLength) ||
-	   (m_nHeight == d.m_nWidth  && m_nWidth == d.m_nLength && m_nLength == d.m_nHeight) ||
-	   (m_nHeight == d.m_nHeight && m_nWidth == d.m_nWidth  && m_nLength == d.m_nLength) ||
-	   (m_nHeight == d.m_nLength && m_nWidth == d.m_nWidth  && m_nLength == d.m_nHeight) ||
-	   (m_nHeight == d.m_nHeight && m_nWidth == d.m_nLength && m_nLength == d.m_nWidth)  ||
-	   (m_nHeight == d.m_nLength && m_nWidth == d.m_nHeight && m_nLength == d.m_nWidth));
-  else
+  if(!rotatable(bUnoriented) && !d.rotatable(bUnoriented))
     return(m_nHeight == d.m_nHeight && m_nWidth == d.m_nWidth && m_nLength == d.m_nLength);
+
+  return uEqual(d);
 }
 
 bool RDimensions::rotatable(bool bUnoriented) const {

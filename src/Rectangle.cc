@@ -303,23 +303,21 @@ bool Rectangle::equal(const Rectangle* r) const {
 }
 
 bool Rectangle::uequal(const Rectangle& r) const {
-  return(equal(r) ||
-	 ((m_nHeight == r.m_nWidth  && m_nWidth == r.m_nHeight && m_nLength == r.m_nLength) ||
-	  (m_nHeight == r.m_nWidth  && m_nWidth == r.m_nLength && m_nLength == r.m_nHeight) ||
-	  (m_nHeight == r.m_nHeight && m_nWidth == r.m_nWidth  && m_nLength == r.m_nLength) ||
-	  (m_nHeight == r.m_nLength && m_nWidth == r.m_nWidth  && m_nLength == r.m_nHeight) ||
-	  (m_nHeight == r.m_nHeight && m_nWidth == r.m_nLength && m_nLength == r.m_nWidth)  ||
-	  (m_nHeight == r.m_nLength && m_nWidth == r.m_nHeight && m_nLength == r.m_nWidth)));
+  return((m_nWidth == r.m_nWidth  && m_nHeight == r.m_nHeight && m_nLength == r.m_nLength) ||
+	 (m_nWidth == r.m_nWidth  && m_nHeight == r.m_nLength && m_nLength == r.m_nHeight) ||
+	 (m_nWidth == r.m_nHeight && m_nHeight == r.m_nLength && m_nLength == r.m_nWidth)  ||
+	 (m_nWidth == r.m_nLength && m_nHeight == r.m_nHeight && m_nLength == r.m_nWidth)  ||
+	 (m_nWidth == r.m_nLength && m_nHeight == r.m_nWidth  && m_nLength == r.m_nHeight) ||
+	 (m_nWidth == r.m_nHeight && m_nHeight == r.m_nWidth  && m_nLength == r.m_nLength));
 }
 
 bool Rectangle::uequal(const Rectangle* r) const {
-  return(equal(r) ||
-	 ((m_nHeight == r->m_nWidth  && m_nWidth == r->m_nHeight && m_nLength == r->m_nLength) ||
-	  (m_nHeight == r->m_nWidth  && m_nWidth == r->m_nLength && m_nLength == r->m_nHeight) ||
-	  (m_nHeight == r->m_nHeight && m_nWidth == r->m_nWidth  && m_nLength == r->m_nLength) ||
-	  (m_nHeight == r->m_nLength && m_nWidth == r->m_nWidth  && m_nLength == r->m_nHeight) ||
-	  (m_nHeight == r->m_nHeight && m_nWidth == r->m_nLength && m_nLength == r->m_nWidth)  ||
-	  (m_nHeight == r->m_nLength && m_nWidth == r->m_nHeight && m_nLength == r->m_nWidth)));
+  return((m_nHeight == r->m_nWidth  && m_nWidth == r->m_nHeight && m_nLength == r->m_nLength) ||
+	 (m_nHeight == r->m_nWidth  && m_nWidth == r->m_nLength && m_nLength == r->m_nHeight) ||
+	 (m_nHeight == r->m_nHeight && m_nWidth == r->m_nWidth  && m_nLength == r->m_nLength) ||
+	 (m_nHeight == r->m_nLength && m_nWidth == r->m_nWidth  && m_nLength == r->m_nHeight) ||
+	 (m_nHeight == r->m_nHeight && m_nWidth == r->m_nLength && m_nLength == r->m_nWidth)  ||
+	 (m_nHeight == r->m_nLength && m_nWidth == r->m_nHeight && m_nLength == r->m_nWidth));
 }
 
 void Rectangle::printTop() const {

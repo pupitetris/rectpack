@@ -62,6 +62,10 @@ class RDimensions {
   bool operator==(const Dimensions& d) const;
   bool operator!=(const Dimensions& d) const;
 
+  /* Just as for Rectangle, check if dimensions can be made equal
+     by means of rotations. */
+  bool uEqual(const RDimensions& d) const;
+
   /**
    * Determines whether or not this rectangle can be congruent to the
    * given rectangle. It will infer which rectangles can be rotated
