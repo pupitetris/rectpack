@@ -61,6 +61,30 @@ const UInt& HeightLengthWidth::d3(const Rectangle& r) const {
   return(r.m_nWidth);
 }
 
+const UInt& HeightLengthWidth::d1(const Dimensions* r) const {
+  return(r->m_nHeight);
+}
+
+const UInt& HeightLengthWidth::d1(const Dimensions& r) const {
+  return(r.m_nHeight);
+}
+
+const UInt& HeightLengthWidth::d2(const Dimensions* r) const {
+  return(r->m_nLength);
+}
+
+const UInt& HeightLengthWidth::d2(const Dimensions& r) const {
+  return(r.m_nLength);
+}
+
+const UInt& HeightLengthWidth::d3(const Dimensions* r) const {
+  return(r->m_nWidth);
+}
+
+const UInt& HeightLengthWidth::d3(const Dimensions& r) const {
+  return(r.m_nWidth);
+}
+
 const URational& HeightLengthWidth::d1(const RDimensions* r) const {
   return(r->m_nHeight);
 }

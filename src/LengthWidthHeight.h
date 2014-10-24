@@ -42,6 +42,13 @@ class LengthWidthHeight : public DimsFunctor {
   virtual const UInt& d3(const Rectangle* r) const;
   virtual const UInt& d3(const Rectangle& r) const;
 
+  virtual const UInt& d1(const Dimensions* r) const;
+  virtual const UInt& d1(const Dimensions& r) const;
+  virtual const UInt& d2(const Dimensions* r) const;
+  virtual const UInt& d2(const Dimensions& r) const;
+  virtual const UInt& d3(const Dimensions* r) const;
+  virtual const UInt& d3(const Dimensions& r) const;
+
   virtual const URational& d1(const RDimensions* r) const;
   virtual const URational& d1(const RDimensions& r) const;
   virtual const URational& d2(const RDimensions* r) const;

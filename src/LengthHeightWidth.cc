@@ -60,6 +60,30 @@ const UInt& LengthHeightWidth::d3(const Rectangle& r) const {
   return(r.m_nWidth);
 }
 
+const UInt& LengthHeightWidth::d1(const Dimensions* r) const {
+  return(r->m_nLength);
+}
+
+const UInt& LengthHeightWidth::d1(const Dimensions& r) const {
+  return(r.m_nLength);
+}
+
+const UInt& LengthHeightWidth::d2(const Dimensions* r) const {
+  return(r->m_nHeight);
+}
+
+const UInt& LengthHeightWidth::d2(const Dimensions& r) const {
+  return(r.m_nHeight);
+}
+
+const UInt& LengthHeightWidth::d3(const Dimensions* r) const {
+  return(r->m_nWidth);
+}
+
+const UInt& LengthHeightWidth::d3(const Dimensions& r) const {
+  return(r.m_nWidth);
+}
+
 const URational& LengthHeightWidth::d1(const RDimensions* r) const {
   return(r->m_nLength);
 }
