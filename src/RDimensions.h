@@ -85,9 +85,8 @@ class RDimensions {
    */
 
   bool rotatable(bool bUnoriented) const;
-  void rotateW(); // Rotate on x axis
-  void rotateH(); // Rotate on y axis
-  void rotateL(); // Rotate on z axis
+  bool isRotated() const;
+  void rotate();
   void relax();
   void setArea();
   URational ratioW() const;
@@ -136,6 +135,7 @@ class RDimensions {
     UNORIENTED
   } Orientation;
 
+  DimsFunctor *m_pRotation; // Represents the current rotation of the rectangle.
   Orientation m_nOrientation;
   URational m_nWidth;
   URational m_nHeight;

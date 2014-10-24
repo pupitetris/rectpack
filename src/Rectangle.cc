@@ -54,7 +54,7 @@ void Rectangle::initialize(const UInt& nWidth, const UInt& nHeight, const UInt& 
   m_nMaxDim = std::max(nWidth, std::max(nHeight, nLength));
   m_bSquare = (m_nWidth == m_nHeight && m_nWidth == m_nLength);
   if(m_bSquare) m_bRotatable = false;
-  m_pRotation = WidthHeightLength::get(); // Initial rotation is a 1:1 mapping.
+  m_pRotation = NULL;
 }
 
 void Rectangle::initialize(const RDimensions& d) {
@@ -69,18 +69,14 @@ void Rectangle::initialize(const RDimensions& d) {
 
 void Rectangle::print() const {
   if (m_bRotated)
-    std::cout << m_nWidth << "x" << m_nHeight << m_nLength << std::flush;
-  else
     std::cout << m_pRotation->d1(this) <<  m_pRotation->d2(this) <<  m_pRotation->d3(this) << std::flush;
+  else
+    std::cout << m_nWidth << "x" << m_nHeight << m_nLength << std::flush;
 }
 
 void Rectangle::printNoLocation() const {
-  if (m_bRotated)
-    std::cout << std::setw(2) << m_nID << ":" << std::setw(2)
-	      << m_pRotation->d1(this) << "x" << std::setw(2) << m_pRotation->d2(this) << "x" << std::setw(2) << m_pRotation->d3(this);
-  else
-    std::cout << std::setw(2) << m_nID << ":" << std::setw(2)
-	      << m_nWidth << "x" << std::setw(2) << m_nHeight << "x" << std::setw(2) << m_nLength;
+  std::cout << std::setw(2) << m_nID << ":" << std::setw(2)
+	    << m_nWidth << "x" << std::setw(2) << m_nHeight << "x" << std::setw(2) << m_nLength;
 }
 
 int Rectangle::nextX() const {
@@ -264,6 +260,9 @@ void Rectangle::rotate() {
   DimsFunctor *pRotator;
   UInt height, length;
   
+  if (m_pRotation == NULL)
+    m_pRotation = WidthHeightLength::get ();
+
   pRotator = m_pRotation->rotator ();
   length = pRotator->d3(this);
   height = pRotator->d2(this);

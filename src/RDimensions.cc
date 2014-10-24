@@ -26,6 +26,7 @@
 #include <limits>
 
 RDimensions::RDimensions(const Rectangle& r) :
+  m_pRotation(r.m_pRotation),
   m_nOrientation(r.m_bRotatable ? UNORIENTED : ORIENTED),
   m_nWidth(r.m_nWidth),
   m_nHeight(r.m_nHeight),
@@ -35,6 +36,7 @@ RDimensions::RDimensions(const Rectangle& r) :
 }
 
 RDimensions::RDimensions() :
+  m_pRotation(NULL),
   m_nOrientation(UNSPECIFIED),
   m_nWidth(0),
   m_nHeight(0),
@@ -44,6 +46,7 @@ RDimensions::RDimensions() :
 }
 
 RDimensions::RDimensions(const RDimensions& d) :
+  m_pRotation(NULL),
   m_nOrientation(d.m_nOrientation),
   m_nWidth(d.m_nWidth),
   m_nHeight(d.m_nHeight),
@@ -53,6 +56,7 @@ RDimensions::RDimensions(const RDimensions& d) :
 }
 
 RDimensions::RDimensions(const Dimensions& d) :
+  m_pRotation(NULL),
   m_nOrientation(UNSPECIFIED),
   m_nWidth(d.m_nWidth),
   m_nHeight(d.m_nHeight),
@@ -62,6 +66,7 @@ RDimensions::RDimensions(const Dimensions& d) :
 }
 
 RDimensions::RDimensions(const BoxDimensions& b) :
+  m_pRotation(NULL),
   m_nOrientation(UNSPECIFIED),
   m_nWidth(b.m_nWidth),
   m_nHeight(b.m_nHeight),
@@ -71,6 +76,7 @@ RDimensions::RDimensions(const BoxDimensions& b) :
 }
 
 const RDimensions& RDimensions::operator=(const RDimensions& d) {
+  m_pRotation = NULL;
   m_nOrientation = d.m_nOrientation;
   m_nWidth = d.m_nWidth;
   m_nHeight = d.m_nHeight;
@@ -81,6 +87,7 @@ const RDimensions& RDimensions::operator=(const RDimensions& d) {
 }
 
 RDimensions::RDimensions(URational nWidth, URational nHeight, URational nLength) :
+  m_pRotation(NULL),
   m_nOrientation(UNSPECIFIED),
   m_nWidth(nWidth),
   m_nHeight(nHeight),
@@ -90,6 +97,7 @@ RDimensions::RDimensions(URational nWidth, URational nHeight, URational nLength)
 }
 
 RDimensions::RDimensions(const Component* c) :
+  m_pRotation(NULL),
   m_nOrientation(ORIENTED),
   m_nWidth(c->m_Dims.m_nWidth),
   m_nHeight(c->m_Dims.m_nHeight),
@@ -171,11 +179,6 @@ bool RDimensions::operator!=(const Dimensions& d) const {
 	 m_nLength.get_ui() != d.m_nLength);
 }
 
-void RDimensions::setArea() {
-  m_nArea = m_nWidth * m_nHeight * m_nLength;
-  m_nMinDim = std::min(m_nWidth, m_nHeight, m_nLength);
-}
-
 bool RDimensions::canFit(const URational& nWidth,
 			 const URational& nHeight,
 			 const URational& nLength) const {
@@ -222,16 +225,38 @@ bool RDimensions::rotatable(bool bUnoriented) const {
 	  (m_nOrientation == UNORIENTED)));
 }
 
-void RDimensions::rotateW() {
-  std::swap(m_nLength, m_nHeight);
+bool RDimensions::isRotated() const {
+  return (m_pRotation == NULL)? false: m_pRotation->isRotated();
 }
 
-void RDimensions::rotateH() {
-  std::swap(m_nWidth, m_nLength);
+void RDimensions::rotate() {
+  DimsFunctor *pRotator;
+  UInt height, length;
+  
+  if (m_pRotation == NULL)
+    m_pRotation = WidthHeightLength::get ();
+
+  pRotator = m_pRotation->rotator ();
+  length = pRotator->d3(this);
+  height = pRotator->d2(this);
+  m_nWidth = pRotator->d1(this);
+  m_nHeight = height;
+  m_nLength = length;
+
+  m_pRotation = m_pRotation->rotate ();
 }
 
-void RDimensions::rotateL() {
-  std::swap(m_nWidth, m_nHeight);
+void RDimensions::relax() {
+  m_nOrientation = ORIENTED;
+  m_nWidth = m_nMinDim;
+  m_nHeight = m_nMinDim;
+  m_nLength = m_nMinDim;
+  m_nArea = m_nWidth * m_nHeight * m_nLength;
+}
+
+void RDimensions::setArea() {
+  m_nArea = m_nWidth * m_nHeight * m_nLength;
+  m_nMinDim = std::min(m_nWidth, m_nHeight, m_nLength);
 }
 
 URational RDimensions::ratioW() const {
@@ -294,14 +319,6 @@ URational RDimensions::minDim3(const URational& nMax,
     return(pDims1->d3(this) + pDims2->d3(r));
   else
     return(std::max(pDims1->d3(this), pDims2->d3(r)));
-}
-
-void RDimensions::relax() {
-  m_nOrientation = ORIENTED;
-  m_nWidth = m_nMinDim;
-  m_nHeight = m_nMinDim;
-  m_nLength = m_nMinDim;
-  m_nArea = m_nWidth * m_nHeight * m_nLength;
 }
 
 bool RDimensions::unit() const{

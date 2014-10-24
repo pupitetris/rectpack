@@ -60,7 +60,7 @@ class DimsFunctor {
   // Rotate is the next possible transformation (wraps around).
   virtual DimsFunctor* rotate() const = 0;
 
-  // Rotator is the functor that transforms dimensions from the current to the next.
+  // Rotator is the functor that transforms dimensions back to the identity.
   virtual DimsFunctor* rotator() const = 0;
 
   // The functor that delivers dimensions shifted to the left relative to this one.
