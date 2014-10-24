@@ -32,28 +32,25 @@ bool GreaterHeight::operator()(const Rectangle* r1,
 			       const Rectangle* r2) const {
   if(r1->m_nHeight != r2->m_nHeight)
     return(r1->m_nHeight > r2->m_nHeight);
-  else if(r1->m_nLength != r2->m_nLength)
+  if(r1->m_nLength != r2->m_nLength)
     return(r1->m_nLength > r2->m_nLength);
-  else
-    return(r1->m_nWidth > r2->m_nWidth);
+  return(r1->m_nWidth > r2->m_nWidth);
 }
 
 bool GreaterHeight::operator()(const Dimensions& d1,
 			       const Dimensions& d2) const {
   if(d1.m_nHeight != d2.m_nHeight)
     return(d1.m_nHeight > d2.m_nHeight);
-  else if(d1.m_nLength != d2.m_nLength)
+  if(d1.m_nLength != d2.m_nLength)
     return(d1.m_nLength > d2.m_nLength);
-  else
-    return(d1.m_nWidth > d2.m_nWidth);
+  return(d1.m_nWidth > d2.m_nWidth);
 }
 
 bool GreaterHeight::operator()(const RDimensions& d1,
 			       const RDimensions& d2) const {
   if(d1.m_nHeight != d2.m_nHeight)
     return(d1.m_nHeight > d2.m_nHeight);
-  else if(d1.m_nLength != d2.m_nLength)
+  if(d1.m_nLength != d2.m_nLength)
     return(d1.m_nLength > d2.m_nLength);
-  else
-    return(d1.m_nWidth > d2.m_nWidth);
+  return(d1.m_nWidth > d2.m_nWidth);
 }
