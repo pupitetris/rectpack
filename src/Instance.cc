@@ -17,7 +17,7 @@
  * along with rectpack. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "DimsGreater.h"
+#include "DimsLesser.h"
 #include "Instance.h"
 #include "GreaterHeight.h"
 #include "GreaterMinDim.h"
@@ -130,6 +130,8 @@ void Instance::parseInstance(const std::string& s) {
     dim[phoenix::ref(d.m_nWidth) = phoenix::ref(ur)] >>
     ( lit('x') | lit('X') ) >>
     dim[phoenix::ref(d.m_nHeight) = phoenix::ref(ur)] >>
+    ( lit('x') | lit('X') ) >>
+    dim[phoenix::ref(d.m_nLength) = phoenix::ref(ur)] >>
     ( lit('o')
       [phoenix::ref(d.m_nOrientation) = RDimensions::ORIENTED] |
       lit('u')
@@ -203,65 +205,87 @@ void Instance::parseInstance(std::deque<UInt>& v,
       push_back(RDimensions(v[i], v[i]));
     for(UInt i = 0; i < vLower.size(); ++i)
       for(UInt j = vLower[i]; j <= vUpper[i]; ++j)
-	push_back(RDimensions(j, j));
+	push_back(RDimensions(j, j, j));
     break;
 
   case 2:
     for(UInt i = 0; i < v.size(); ++i)
-      push_back(RDimensions(v[i], v[i] + 1));
+      push_back(RDimensions(v[i], v[i] + 1, v[i] + 2));
     for(UInt i = 0; i < vLower.size(); ++i)
       for(UInt j = vLower[i]; j <= vUpper[i]; ++j)
-	push_back(RDimensions(j, j + 1));
+	push_back(RDimensions(j, j + 1, j + 2));
     break;
 
   case 3:
-    for(UInt i = 0; i < v.size(); ++i)
-      push_back(RDimensions(v[i], n + 1 - v[i]));
+    for(UInt i = 0; i < v.size(); ++i) {
+      push_back(RDimensions(v[i], n + 1 - v[i], v[i]));
+      if (v[i] != n + 1 - v[i]) {
+	push_back(RDimensions(n + 1 - v[i], v[i], v[i]));
+	push_back(RDimensions(v[i], v[i], n + 1 - v[i]));
+      }
+    }
     for(UInt i = 0; i < vLower.size(); ++i)
-      for(UInt j = vLower[i]; j <= vUpper[i]; ++j)
-	push_back(RDimensions(j, n + 1 - j));
+      for(UInt j = vLower[i]; j <= vUpper[i]; ++j) {
+	push_back(RDimensions(j, n + 1 - j, j));
+	if (j != n + 1 - j) {
+	  push_back(RDimensions(j, n + 1 - j, j));
+	  push_back(RDimensions(j, j, n + 1 - j));
+	}
+      }
     break;
 
   case 4:
     for(UInt i = 0; i < v.size(); ++i)
-      push_back(RDimensions(v[i], 2 * n - v[i]));
+      push_back(RDimensions(v[i], 2 * n - v[i], 3 * n - 2 * v[i]));
     for(UInt i = 0; i < vLower.size(); ++i)
       for(UInt j = vLower[i]; j <= vUpper[i]; ++j)
-	push_back(RDimensions(j, 2 * n - j));
+	push_back(RDimensions(j, 2 * n - j, 3 * n - 2 * j));
     break;
 
   case 5:
     for(UInt i = 0; i < v.size(); ++i)
       push_back(RDimensions(URational((UInt) 1, v[i]),
-			    URational((UInt) 1, v[i] + 1)));
+			    URational((UInt) 1, v[i] + 1),
+			    URational((UInt) 1, v[i] + 2)));
     for(UInt i = 0; i < vLower.size(); ++i)
       for(UInt j = vLower[i]; j <= vUpper[i]; ++j)
 	push_back(RDimensions(URational((UInt) 1, j),
-			      URational((UInt) 1, j + 1)));
+			      URational((UInt) 1, j + 1),
+			      URational((UInt) 1, j + 2)));
     break;
 
   case 6:
-    for(UInt i = 0; i < v.size(); ++i)
-      push_back(RDimensions(v[i] * n + 1, n * (n + 1 - v[i]) + 1));
+    for(UInt i = 0; i < v.size(); ++i) {
+      push_back(RDimensions(v[i] * n + 1, n * (n + 1 - v[i]) + 1), v[i] * n + 1);
+      if (v[i] * n + 1 != n * (n + 1 - v[i]) + 1) {
+	push_back(RDimensions(v[i] * n + 1, v[i] * n + 1, n * (n + 1 - v[i]) + 1));
+	push_back(RDimensions(n * (n + 1 - v[i]) + 1), v[i] * n + 1, v[i] * n + 1);
+      }
+    }
     for(UInt i = 0; i < vLower.size(); ++i)
-      for(UInt j = vLower[i]; j <= vUpper[i]; ++j)
-	push_back(RDimensions(j * n + 1, n * (n + 1 - j) + 1)); 
+      for(UInt j = vLower[i]; j <= vUpper[i]; ++j) {
+	push_back(RDimensions(j * n + 1, n * (n + 1 - j) + 1), j * n + 1);
+	if (j * n + 1 != n * (n + 1 - j) + 1) {
+	  push_back(RDimensions(j * n + 1, j * n + 1, n * (n + 1 - j) + 1));
+	  push_back(RDimensions(n * (n + 1 - j) + 1), j * n + 1, j * n + 1);
+	}
+      }
     break;
 
   case 7:
     for(UInt i = 0; i < v.size(); ++i)
-      push_back(RDimensions(2 * v[i], 2 * (v[i] + 1)));
+      push_back(RDimensions(2 * v[i], 2 * (v[i] + 1), 2 * (v[i] + 2)));
     for(UInt i = 0; i < vLower.size(); ++i)
       for(UInt j = vLower[i]; j <= vUpper[i]; ++j)
-	push_back(RDimensions(2 * j, 2 * (j + 1)));
+	push_back(RDimensions(2 * j, 2 * (j + 1), 2 * (j + 2)));
     break;
 
   case 8:
     for(UInt i = 0; i < v.size(); ++i)
-      push_back(RDimensions(2 * v[i] - 1, 2 * v[i]));
+      push_back(RDimensions(2 * v[i] - 1, 2 * v[i], 2 * v[i] + 1));
     for(UInt i = 0; i < vLower.size(); ++i)
       for(UInt j = vLower[i]; j <= vUpper[i]; ++j)
-	push_back(RDimensions(2 * j - 1, 2 * j));
+	push_back(RDimensions(2 * j - 1, 2 * j, 2 * j + 1));
     break;
 
   default:
@@ -303,7 +327,7 @@ void Instance::inferInstanceProperties() {
   m_bAllSquares = true;
   for(std::deque<RDimensions>::const_iterator k = begin();
       k != end(); ++k)
-    if(k->m_nWidth != k->m_nHeight) {
+    if(k->m_nWidth != k->m_nHeight || k->m_nWidth != k->m_nLength) {
       m_bAllSquares = false;
       break;
     }
@@ -358,7 +382,8 @@ void Instance::inferInstanceSorting(const std::multiset<RDimensions>& s) {
   m_bSortedDecreasingSize = true;
   for(const_iterator j = begin(); j != end(); ++j)
     if(j->m_nWidth > nPrevious ||
-       j->m_nHeight > nPrevious) {
+       j->m_nHeight > nPrevious ||
+       j->m_nLength > nPrevious) {
       m_bSortedDecreasingSize = false;
       break;
     }
@@ -384,9 +409,9 @@ void Instance::inferInstanceSequential(const std::multiset<RDimensions>& s) {
     m_bSequential = true;
     for(UInt n = 1; n <= size(); ++n)
       if((m_nBenchmark == 1 &&
-	  s.find(RDimensions(n, n)) == s.end()) ||
+	  s.find(RDimensions(n, n, n)) == s.end()) ||
 	 (m_nBenchmark == 2 &&
-	  s.find(RDimensions(n, n + 1)) == s.end())) {
+	  s.find(RDimensions(n, n + 1, n + 2)) == s.end())) {
 	m_bSequential = false;
 	return;
       }
@@ -450,8 +475,7 @@ void Instance::inferInstanceSymmetry(const std::multiset<RDimensions>& s) {
 
     std::multiset<RDimensions>::iterator i;
     for(i = r.begin(); i != r.end(); ++i)
-      if(d.m_nHeight == i->m_nWidth &&
-	 d.m_nWidth == i->m_nHeight)
+      if(d.uEqual(*i))
 	break;
 
     /**
@@ -486,29 +510,35 @@ void Instance::inferInstanceExtrema() {
   for(const_iterator i = begin(); i != end(); ++i) {
     m_nMin.m_nWidth = std::min(m_nMin.m_nWidth, i->m_nWidth);
     m_nMin.m_nHeight = std::min(m_nMin.m_nHeight, i->m_nHeight);
+    m_nMin.m_nLength = std::min(m_nMin.m_nLength, i->m_nLength);
     m_nMax.m_nWidth = std::max(m_nMax.m_nWidth, i->m_nWidth);
     m_nMax.m_nHeight = std::max(m_nMax.m_nHeight, i->m_nHeight);
+    m_nMax.m_nLength = std::max(m_nMax.m_nHeight, i->m_nLength);
     m_nTotalArea += i->m_nArea;
     m_nMinArea = std::min(m_nMinArea, i->m_nArea);
     m_nMaxArea = std::max(m_nMaxArea, i->m_nArea);
     if(i->rotatable(m_bUnoriented)) {
       m_nMaxMin.m_nHeight = std::max(m_nMaxMin.m_nHeight, i->m_nMinDim);
       m_nMaxMin.m_nWidth = std::max(m_nMaxMin.m_nWidth, i->m_nMinDim);
-      m_nStacked.m_nHeight += std::max(i->m_nHeight, i->m_nWidth);
-      m_nStacked.m_nWidth += std::max(i->m_nHeight, i->m_nWidth);
+      m_nMaxMin.m_nLength = std::max(m_nMaxMin.m_nLength, i->m_nMinDim);
+      m_nStacked.m_nHeight += std::max(i->m_nHeight, std::max(i->m_nWidth, i->m_nLength));
+      m_nStacked.m_nWidth += std::max(i->m_nHeight, std::max(i->m_nWidth, i->m_nLength));
+      m_nStacked.m_nLength += std::max(i->m_nHeight, std::max(i->m_nWidth, i->m_nLength));
     }
     else {
       m_nMaxMin.m_nHeight = std::max(m_nMaxMin.m_nHeight, i->m_nHeight);
       m_nMaxMin.m_nWidth = std::max(m_nMaxMin.m_nWidth, i->m_nWidth);
+      m_nMaxMin.m_nLength = std::max(m_nMaxMin.m_nLength, i->m_nLength);
       m_nStacked.m_nHeight += i->m_nHeight;
       m_nStacked.m_nWidth += i->m_nWidth;
+      m_nStacked.m_nLength += i->m_nLength;
     }
   }
   m_nMaxMin.setArea();
   m_nMax.setArea();
   m_nMin.setArea();
-  m_nMaxDim = std::max(m_nMax.m_nWidth, m_nMax.m_nHeight);
-  m_nMinDim = std::min(m_nMin.m_nWidth, m_nMin.m_nHeight);
+  m_nMaxDim = std::max(m_nMax.m_nWidth, std::max(m_nMax.m_nHeight, m_nMax.m_nLength));
+  m_nMinDim = std::min(m_nMin.m_nWidth, std::min(m_nMax.m_nHeight, m_nMax.m_nLength));
   m_nStacked.setArea();
 }
 
@@ -536,9 +566,9 @@ void Instance::sort(int nOrdering, bool bYSmallerThanX) {
   else if(nOrdering == 5)
     sortDecreasingWidth();
   else if(nOrdering == 6)
-    sortIncreasingWH();
+    sortIncreasingWRatio();
   else if(nOrdering == 7)
-    sortIncreasingHW();
+    sortIncreasingHWRatio();
   else if(nOrdering == 8) {
     if(m_bUnoriented)
       sortDecreasingArea();
@@ -559,19 +589,20 @@ void Instance::sortDecreasingWidth() {
   std::sort(begin(), end(), GreaterWidth());
 }
 
-void Instance::sortIncreasingWH() {
-  std::sort(begin(), end(), LessRatioWH());
+void Instance::sortIncreasingWRatio() {
+  std::sort(begin(), end(), LessRatioWHL());
 }
 
-void Instance::sortIncreasingHW() {
-  std::sort(begin(), end(), LessRatioHW());
+void Instance::sortIncreasingHRatio() {
+  std::sort(begin(), end(), LessRatioHLW());
 }
 
+// pupitetris TODO: port this function, not needed for challenge.
 void Instance::rewriteJValue(float nJValue) {
   UInt n = size();
   for(UInt i = 0; i < size(); ++i) {
     operator[](i).m_nWidth = n - i;
-    UInt k = n - i; // k=1..n
+    UInt k = n - i; // k=n..1
     operator[](i).m_nHeight =
       (UInt) (nJValue*(n+1)+(1-2*nJValue)*k + 0.5);
     operator[](i).setArea();
@@ -585,6 +616,7 @@ void Instance::scaleDiscrete() {
   for(iterator i = begin(); i != end(); ++i) {
     m = m.lcm(i->m_nWidth.get_den_mpz());
     m = m.lcm(i->m_nHeight.get_den_mpz());
+    m = m.lcm(i->m_nLength.get_den_mpz());
   }
   for(iterator i = begin(); i != end(); ++i) {
     (*i) *= m;
@@ -598,6 +630,7 @@ void Instance::scaleDivisor() {
   for(iterator i = begin(); i != end(); ++i) {
     m = m.gcd(i->m_nWidth.get_num_mpz());
     m = m.gcd(i->m_nHeight.get_num_mpz());
+    m = m.gcd(i->m_nLength.get_num_mpz());
   }
   for(iterator i = begin(); i != end(); ++i) {
     (*i) /= m;
@@ -617,67 +650,140 @@ bool Instance::oriented(const RDimensions& r) const {
 }
 
 bool Instance::square(const RDimensions& r) const {
-  return(r.m_nWidth == r.m_nHeight);
+  return(r.m_nWidth == r.m_nHeight && r.m_nWidth == r.m_nLength);
 }
 
-URational Instance::minDimPairs(const URational& nMax,
-				const DimsFunctor* pDims) const {
+URational Instance::minDimPairs23(const URational& nMax,
+				  const DimsFunctor* pDims) const {
+  if(empty()) return(URational((UInt) 0));
+  if(size() == 1)
+    return(front().rotatable(m_bUnoriented) ?
+	   front().m_nMinDim : std::min(pDims->d2(&(front())), pDims->d3(&(front()))));
+
+  URational nMin((UInt) 0);
+  for(const_iterator i = begin(); i != end(); ++i) {
+
+    URational m(std::min (pDims->d2(m_nStacked), pDims->d3(m_nStacked)));
+    for (Int ri = 0; ri < NUM_ROTATIONS; ri++) {
+      if(pDims->d1(*i) <= nMax) {
+	URational n((UInt) 0);
+	for(const_iterator j = i + 1; j != end(); ++j) {
+
+	  DimsFunctor *pDims2 = pDims;
+	  URational p(std::min (pDims->d2(m_nStacked), pDims->d3(m_nStacked)));
+	  for (Int rj = 0; rj < NUM_ROTATIONS; rj++) {
+	    if(pDims2->d1(*j) <= nMax)
+	      p = std::min(p, i->minDim23(nMax, *j, pDims, pDims2));
+
+	    // Consider j rotated, if possible.
+	    if(!j->rotatable(m_bUnoriented))
+	      break;
+	    pDims2 = pDims2->rotate ();
+	  }
+	  n = std::max(n, p);
+
+	}
+	m = std::min(m, n);
+
+      }
+      nMin = std::max(nMin, m);
+
+      // Consider i rotated, if possible.
+      if(!i->rotatable(m_bUnoriented))
+	break;
+      pDims = pDims->rotate ();
+    }
+  return(nMin);
+}
+
+URational Instance::minDimPairs2(const URational& nMax,
+				 const DimsFunctor* pDims) const {
   if(empty()) return(URational((UInt) 0));
   if(size() == 1)
     return(front().rotatable(m_bUnoriented) ?
 	   front().m_nMinDim : pDims->d2(&(front())));
 
   URational nMin((UInt) 0);
-  DimsFunctor* pRev = pDims->reverse();
   for(const_iterator i = begin(); i != end(); ++i) {
 
-    /**
-     * Consider i in its current rotation.
-     */
-
     URational m(pDims->d2(m_nStacked));
-    if(pDims->d1(*i) <= nMax) {
-      URational n((UInt) 0);
-      for(const_iterator j = i + 1; j != end(); ++j) {
-	URational p(pDims->d2(m_nStacked));
-	if(pDims->d1(*j) <= nMax)
-	  p = std::min(p, i->minDim(nMax, *j, pDims, pDims));
-	if(j->rotatable(m_bUnoriented) &&
-	   pDims->d2(*j) <= nMax)
-	  p = std::min(p, i->minDim(nMax, *j, pDims, pRev));
-	n = std::max(n, p);
+    for (Int ri = 0; ri < NUM_ROTATIONS; ri++) {
+      if(pDims->d1(*i) <= nMax) {
+	URational n((UInt) 0);
+	for(const_iterator j = i + 1; j != end(); ++j) {
+
+	  DimsFunctor *pDims2 = pDims;
+	  URational p(pDims->d2(m_nStacked));
+	  for (Int rj = 0; rj < NUM_ROTATIONS; rj++) {
+	    if(pDims2->d1(*j) <= nMax)
+	      p = std::min(p, i->minDim2(nMax, *j, pDims, pDims2));
+
+	    // Consider j rotated, if possible.
+	    if(!j->rotatable(m_bUnoriented))
+	      break;
+	    pDims2 = pDims2->rotate ();
+	  }
+	  n = std::max(n, p);
+
+	}
+	m = std::min(m, n);
+
       }
-      m = std::min(m, n);
+      nMin = std::max(nMin, m);
+
+      // Consider i rotated, if possible.
+      if(!i->rotatable(m_bUnoriented))
+	break;
+      pDims = pDims->rotate ();
     }
-
-    /**
-     * Consider i rotated, if possible.
-     */
-
-    if(i->rotatable(m_bUnoriented) &&
-       pDims->d2(*i) <= nMax) {
-      URational n((UInt) 0);
-      for(const_iterator j = i + 1; j != end(); ++j) {
-	URational p(pDims->d2(m_nStacked));
-	if(pDims->d1(*j) <= nMax)
-	  p = std::min(p, i->minDim(nMax, *j, pRev, pDims));
-	if(j->rotatable(m_bUnoriented) &&
-	   pDims->d2(*j) <= nMax)
-	  p = std::min(p, i->minDim(nMax, *j, pRev, pRev));
-	n = std::max(n, p);
-      }
-      m = std::min(m, n);
-    }
-    nMin = std::max(nMin, m);
-  }
-
-  delete pRev;
-
   return(nMin);
 }
 
-URational Instance::minDimStacked(const URational& nMax,
-				  const DimsFunctor* pDims) const {
+URational Instance::minDimPairs3(const URational& nMax,
+				 const DimsFunctor* pDims) const {
+  if(empty()) return(URational((UInt) 0));
+  if(size() == 1)
+    return(front().rotatable(m_bUnoriented) ?
+	   front().m_nMinDim : pDims->d3(&(front())));
+
+  URational nMin((UInt) 0);
+  for(const_iterator i = begin(); i != end(); ++i) {
+
+    URational m(pDims->d3(m_nStacked));
+    for (Int ri = 0; ri < NUM_ROTATIONS; ri++) {
+      if(pDims->d1(*i) <= nMax) {
+	URational n((UInt) 0);
+	for(const_iterator j = i + 1; j != end(); ++j) {
+
+	  DimsFunctor *pDims2 = pDims;
+	  URational p(pDims->d3(m_nStacked));
+	  for (Int rj = 0; rj < NUM_ROTATIONS; rj++) {
+	    if(pDims2->d1(*j) <= nMax)
+	      p = std::min(p, i->minDim3(nMax, *j, pDims, pDims2));
+
+	    // Consider j rotated, if possible.
+	    if(!j->rotatable(m_bUnoriented))
+	      break;
+	    pDims2 = pDims2->rotate ();
+	  }
+	  n = std::max(n, p);
+
+	}
+	m = std::min(m, n);
+
+      }
+      nMin = std::max(nMin, m);
+
+      // Consider i rotated, if possible.
+      if(!i->rotatable(m_bUnoriented))
+	break;
+      pDims = pDims->rotate ();
+    }
+  return(nMin);
+}
+
+URational Instance::minDim23Stacked(const URational& nMax,
+				    const DimsFunctor* pDims) const {
 
   /**
    * Sum up the total stack for every rectangle that exceeds the first
@@ -686,16 +792,35 @@ URational Instance::minDimStacked(const URational& nMax,
 
   URational nMin(0);
   URational nMaxDim(nMax / (URational) 2);
+
   for(const_iterator i = begin(); i != end(); ++i) {
     if(i->rotatable(m_bUnoriented)) {
-      if(pDims->d2(*i) > nMax && pDims->d1(*i) > nMaxDim)
-	nMin += pDims->d2(*i);
-      else if(pDims->d1(*i) > nMax && pDims->d2(*i) > nMaxDim)
-	nMin += pDims->d1(*i);
-      else if(i->m_nMinDim > nMaxDim)
+
+      bool match = false;
+      DimsFunctor *pRot = pDims;
+      for(Int r = 0; r < NUM_ROTATIONS; r++) {
+	if(pRot->d1(*i) > nMaxDim) {
+	  bool d2 = (pRot->d2(*i) > nMax);
+	  bool d3 = (pRot->d2(*i) > nMax);
+	  if(d2 || d3) {
+	    if(d2 && d3)
+	      nMin += std::min (pRot->d2(*i), pRot->d3(*i));
+	    else if(d2)
+	      nMin += pRot->d2(*i);
+	    else // it has to be d3
+	      nMin += pRot->d3(*i);
+	    match = true;
+	    break;
+	  }
+	}
+	pRot = pRot->rotate ();
+      }
+      if(!match && i->m_nMinDim > nMaxDim)
 	nMin += i->m_nMinDim;
+
     }
-    else if(pDims->d1(*i) > nMaxDim) nMin += pDims->d2(*i);
+    else // not rotatable: (pupitetris FIXME: maybe it's not std::min)
+      if(pDims->d1(*i) > nMaxDim) nMin += std::min(pDims->d2(*i), pDims->d3(*i));
   }
 
   /**
@@ -703,26 +828,158 @@ URational Instance::minDimStacked(const URational& nMax,
    * the dimensional constraint. Add in its other dimension.
    */
 
-  for(const_iterator i = begin(); i != end(); ++i)
+  for(const_iterator i = begin(); i != end(); ++i) {
     if(i->rotatable(m_bUnoriented)) {
-      if(pDims->d1(*i) > nMax && pDims->d2(*i) == nMaxDim)
-	nMin += pDims->d1(*i);
-      else if(pDims->d2(*i) > nMax && pDims->d1(*i) == nMaxDim)
-	nMin += pDims->d2(*i);
-      else if(i->m_nMinDim == nMaxDim)
+
+      bool match = false;
+      DimsFunctor *pRot = pDims;
+      for(Int r = 0; r < NUM_ROTATIONS; r++) {
+	if((pRot->d1(*i) > nMax) && 
+	   (pRot->d2(*i) == nMaxDim || pRot->d3(*i) == nMaxDim)) {
+	  nMin += pRot->d1(*i);
+	  match = true;
+	  break;
+	}
+	pRot = pRot->rotate ();
+      }
+      if(!match && i->m_nMinDim == nMaxDim)
 	nMin += i->m_nMinDim;
+
     }
-    else if(pDims->d1(*i) == nMaxDim) nMin += pDims->d2(*i);
+    else // not rotatable: (pupitetris FIXME: maybe it's not std::min)
+      if(pDims->d1(*i) == nMaxDim) nMin += std::min(pDims->d2(*i), pDims->d3(*i));
+  }
 
   return(nMin);
 }
 
-URational Instance::minDimStacked2(const URational& nMax,
-				   const DimsFunctor* pDims,
-				   bool& bOpenInterval) const {
+URational Instance::minDim2Stacked(const URational& nMax,
+				   const DimsFunctor* pDims) const {
+
+  /**
+   * Sum up the total stack for every rectangle that exceeds the first
+   * dimensional constraints.
+   */
+
+  URational nMin(0);
+  URational nMaxDim(nMax / (URational) 2);
+
+  for(const_iterator i = begin(); i != end(); ++i) {
+    if(i->rotatable(m_bUnoriented)) {
+
+      bool match = false;
+      DimsFunctor *pRot = pDims;
+      for(Int r = 0; r < NUM_ROTATIONS; r++) {
+	if(pRot->d2(*i) > nMax && pRot->d1(*i) > nMaxDim) {
+	  nMin += pRot->d2(*i);
+	  match = true;
+	  break;
+	}
+	pRot = pRot->rotate ();
+      }
+      if(!match && i->m_nMinDim > nMaxDim)
+	nMin += i->m_nMinDim;
+
+    }
+    else // not rotatable:
+      if(pDims->d1(*i) > nMaxDim) nMin += pDims->d2(*i);
+  }
+
+  /**
+   * Now find one rectangle whose first dimension equals exactly half
+   * the dimensional constraint. Add in its other dimension.
+   */
+
+  for(const_iterator i = begin(); i != end(); ++i) {
+    if(i->rotatable(m_bUnoriented)) {
+
+      bool match = false;
+      DimsFunctor *pRot = pDims;
+      for(Int r = 0; r < NUM_ROTATIONS; r++) {
+	if(pRot->d1(*i) > nMax && pRot->d2(*i) == nMaxDim) {
+	  nMin += pRot->d1(*i);
+	  match = true;
+	  break;
+	}
+	pRot = pRot->rotate ();
+      }
+      if(!match && i->m_nMinDim == nMaxDim)
+	nMin += i->m_nMinDim;
+
+    }
+    else // not rotatable:
+      if(pDims->d1(*i) == nMaxDim) nMin += pDims->d2(*i);
+  }
+
+  return(nMin);
+}
+
+URational Instance::minDim3Stacked(const URational& nMax,
+				   const DimsFunctor* pDims) const {
+
+  /**
+   * Sum up the total stack for every rectangle that exceeds the first
+   * dimensional constraints.
+   */
+
+  URational nMin(0);
+  URational nMaxDim(nMax / (URational) 2);
+
+  for(const_iterator i = begin(); i != end(); ++i) {
+    if(i->rotatable(m_bUnoriented)) {
+
+      bool match = false;
+      DimsFunctor *pRot = pDims;
+      for(Int r = 0; r < NUM_ROTATIONS; r++) {
+	if(pRot->d3(*i) > nMax && pRot->d1(*i) > nMaxDim) {
+	  nMin += pRot->d3(*i);
+	  match = true;
+	  break;
+	}
+	pRot = pRot->rotate ();
+      }
+      if(!match && i->m_nMinDim > nMaxDim)
+	nMin += i->m_nMinDim;
+
+    }
+    else // not rotatable:
+      if(pDims->d1(*i) > nMaxDim) nMin += pDims->d3(*i);
+  }
+
+  /**
+   * Now find one rectangle whose first dimension equals exactly half
+   * the dimensional constraint. Add in its other dimension.
+   */
+
+  for(const_iterator i = begin(); i != end(); ++i) {
+    if(i->rotatable(m_bUnoriented)) {
+
+      bool match = false;
+      DimsFunctor *pRot = pDims;
+      for(Int r = 0; r < NUM_ROTATIONS; r++) {
+	if(pRot->d1(*i) > nMax && pRot->d3(*i) == nMaxDim) {
+	  nMin += pRot->d1(*i);
+	  match = true;
+	  break;
+	}
+	pRot = pRot->rotate ();
+      }
+      if(!match && i->m_nMinDim == nMaxDim)
+	nMin += i->m_nMinDim;
+
+    }
+    else // not rotatable:
+      if(pDims->d1(*i) == nMaxDim) nMin += pDims->d3(*i);
+  }
+
+  return(nMin);
+}
+
+URational Instance::minDim23Stacked2(const URational& nMax,
+				     const DimsFunctor* pDims,
+				     bool& bOpenInterval) const {
   std::vector<RDimensions> v(size());
   std::copy(begin(), end(), v.begin());
-  DimsFunctor* pRev = pDims->reverse();
   
   /**
    * Orient the rectangles depending on the constraint (where
@@ -733,10 +990,14 @@ URational Instance::minDimStacked2(const URational& nMax,
   for(std::vector<RDimensions>::iterator i = v.begin();
       i != v.end(); ++i)
     if(i->rotatable(m_bUnoriented)) {
-      if(pDims->d1(*i) > nMax)
-	i->rotate(); // d1 and d2 can't both exceed nMax.
-      else if(pDims->d2(*i) <= nMax)
-	i->relax(); // d1 and d2 both fit within nMax.
+      if(pDims->d1(*i) <= nMax &&
+	 pDims->d2(*i) <= nMax &&
+	 pDims->d3(*i) <= nMax)
+	i->relax(); // d1 and d2 and d3 both fit within nMax.
+      else {
+	while(pDims->d1(*i) > nMax) // at least one of the dimensions can't exceed nMax.
+	  i->rotate();
+      }
     }
 
   /**
@@ -744,7 +1005,91 @@ URational Instance::minDimStacked2(const URational& nMax,
    * 1st dimension.
    */
 
-  std::sort(v.begin(), v.end(), DimsGreater(pRev));
+  std::sort(v.begin(), v.end(), DimsLesser(pDims));
+  
+  URational d2((UInt) 0);
+  URational d3((UInt) 0);
+  for(std::vector<RDimensions>::iterator i = v.begin();
+      i != v.end(); ++i) {
+    d2 += pDims->d1(*i);
+    d3 += pDims->d1(*i);
+
+    /**
+     * If the current width is now greater than our constraint, we
+     * should then inspect the last few rectangles we added and derive
+     * a second dimension constraint to exclude the current rectangle
+     * from being stacked.
+     */
+
+    if(d2 > nMax) {
+      
+      /**
+       * To exclude the current rectangle, we simply require the
+       * second dimension to be greater than twice the second
+       * dimension of this rectangle. There's a caveat here. If there
+       * are several rectangles with the same height that are equal to
+       * the midpoint, then the interval can be closed. Otherwise, it
+       * must be open (so as to not include the last rectangle).
+       */
+
+      if(i != v.begin() && pDims->d2(*(i - 1)) != pDims->d2(*i))
+	bOpenInterval = true;
+      else
+	bOpenInterval = false;
+      return(URational(pDims->d2(*i) * (URational) 2));
+    }
+    if(d3 > nMax) {
+      
+      /**
+       * To exclude the current rectangle, we simply require the
+       * second dimension to be greater than twice the second
+       * dimension of this rectangle. There's a caveat here. If there
+       * are several rectangles with the same height that are equal to
+       * the midpoint, then the interval can be closed. Otherwise, it
+       * must be open (so as to not include the last rectangle).
+       */
+
+      if(i != v.begin() && pDims->d3(*(i - 1)) != pDims->d3(*i))
+	bOpenInterval = true;
+      else
+	bOpenInterval = false;
+      return(URational(pDims->d3(*i) * (URational) 2));
+    }
+  }
+  return(URational((UInt) 0));
+}
+
+URational Instance::minDim2Stacked2(const URational& nMax,
+				    const DimsFunctor* pDims,
+				    bool& bOpenInterval) const {
+  std::vector<RDimensions> v(size());
+  std::copy(begin(), end(), v.begin());
+  
+  /**
+   * Orient the rectangles depending on the constraint (where
+   * applicable), or relax the widths and heights by setting them to
+   * the minimum dimension.
+   */
+
+  for(std::vector<RDimensions>::iterator i = v.begin();
+      i != v.end(); ++i)
+    if(i->rotatable(m_bUnoriented)) {
+      if(pDims->d1(*i) <= nMax &&
+	 pDims->d2(*i) <= nMax &&
+	 pDims->d3(*i) <= nMax)
+	i->relax(); // d1 and d2 and d3 both fit within nMax.
+      else {
+	while(pDims->d1(*i) > nMax) // at least one of the dimensions can't exceed nMax.
+	  i->rotate();
+      }
+    }
+
+  /**
+   * Now sort in decreasing 2nd dimension, breaking ties by decreasing
+   * 1st dimension.
+   */
+
+  std::sort(v.begin(), v.end(), DimsLesser(pDims));
   
   URational d2((UInt) 0);
   for(std::vector<RDimensions>::iterator i = v.begin();
@@ -773,11 +1118,75 @@ URational Instance::minDimStacked2(const URational& nMax,
 	bOpenInterval = true;
       else
 	bOpenInterval = false;
-      delete pRev;
       return(URational(pDims->d2(*i) * (URational) 2));
     }
   }
-  delete pRev;
+  return(URational((UInt) 0));
+}
+
+
+URational Instance::minDim3Stacked2(const URational& nMax,
+				    const DimsFunctor* pDims,
+				    bool& bOpenInterval) const {
+  std::vector<RDimensions> v(size());
+  std::copy(begin(), end(), v.begin());
+  
+  /**
+   * Orient the rectangles depending on the constraint (where
+   * applicable), or relax the widths and heights by setting them to
+   * the minimum dimension.
+   */
+
+  for(std::vector<RDimensions>::iterator i = v.begin();
+      i != v.end(); ++i)
+    if(i->rotatable(m_bUnoriented)) {
+      if(pDims->d1(*i) <= nMax &&
+	 pDims->d2(*i) <= nMax &&
+	 pDims->d3(*i) <= nMax)
+	i->relax(); // d1 and d2 and d3 both fit within nMax.
+      else {
+	while(pDims->d1(*i) > nMax) // at least one of the dimensions can't exceed nMax.
+	  i->rotate();
+      }
+    }
+
+  /**
+   * Now sort in decreasing 2nd dimension, breaking ties by decreasing
+   * 1st dimension.
+   */
+
+  std::sort(v.begin(), v.end(), DimsLesser(pDims));
+  
+  URational d3((UInt) 0);
+  for(std::vector<RDimensions>::iterator i = v.begin();
+      i != v.end(); ++i) {
+    d3 += pDims->d1(*i);
+
+    /**
+     * If the current width is now greater than our constraint, we
+     * should then inspect the last few rectangles we added and derive
+     * a second dimension constraint to exclude the current rectangle
+     * from being stacked.
+     */
+
+    if(d3 > nMax) {
+      
+      /**
+       * To exclude the current rectangle, we simply require the
+       * second dimension to be greater than twice the second
+       * dimension of this rectangle. There's a caveat here. If there
+       * are several rectangles with the same height that are equal to
+       * the midpoint, then the interval can be closed. Otherwise, it
+       * must be open (so as to not include the last rectangle).
+       */
+
+      if(i != v.begin() && pDims->d3(*(i - 1)) != pDims->d3(*i))
+	bOpenInterval = true;
+      else
+	bOpenInterval = false;
+      return(URational(pDims->d3(*i) * (URational) 2));
+    }
+  }
   return(URational((UInt) 0));
 }
 
@@ -811,8 +1220,9 @@ void Instance::roundUp() {
   for(iterator i = begin(); i != end(); ++i) {
     i->m_nWidth.ceil();
     i->m_nHeight.ceil();
-    i->m_nMinDim = std::min(i->m_nWidth, i->m_nHeight);
-    i->m_nArea = i->m_nWidth * i->m_nHeight;
+    i->m_nLength.ceil();
+    i->m_nMinDim = std::min(i->m_nWidth, std::min(i->m_nHeight, i->m_nLength));
+    i->m_nArea = i->m_nWidth * i->m_nHeight * i->m_nLength;
   }
 }
 
@@ -820,7 +1230,8 @@ void Instance::roundDown() {
   for(iterator i = begin(); i != end(); ++i) {
     i->m_nWidth.floor();
     i->m_nHeight.floor();
-    i->m_nMinDim = std::min(i->m_nWidth, i->m_nHeight);
-    i->m_nArea = i->m_nWidth * i->m_nHeight;
+    i->m_nLength.floor();
+    i->m_nMinDim = std::min(i->m_nWidth, std::min(i->m_nHeight, i->m_nLength));
+    i->m_nArea = i->m_nWidth * i->m_nHeight * i->m_nLength;
   }
 }

@@ -61,12 +61,13 @@ class Instance : public std::deque<RDimensions> {
   void sortDecreasingMinDim();
   void sortDecreasingHeight();
   void sortDecreasingWidth();
-  void sortIncreasingWH();
-  void sortIncreasingHW();
+  void sortDecreasingLength();
+  void sortIncreasingWRatio();
+  void sortIncreasingHRatio();
 
   /**
-   * Sorts the rectangles in order of H>W, H=W, then W>H, and then
-   * within that constraint, we sort the items by decreasing area.
+   * Sorts the rectangles in order of H,W,L, and then within that
+   * constraint, we sort the items by decreasing area.
    */
 
   void inferInstanceProperties();
@@ -116,8 +117,16 @@ class Instance : public std::deque<RDimensions> {
    * @return the minimum size of the second dimension.
    */
 
-  URational minDimPairs(const URational& nMax,
-			const DimsFunctor* pDims) const;
+  // Port where the "other" dimension is represented by both 2 and 3
+  URational minDimPairs23(const URational& nMax,
+			  const DimsFunctor* pDims) const;
+
+  // Port where we define which dimension is going to be the "other" (either 2 or 3)
+  URational minDimPairs2(const URational& nMax,
+			 const DimsFunctor* pDims) const;
+
+  URational minDimPairs3(const URational& nMax,
+			 const DimsFunctor* pDims) const;
 
   /**
    * Given that all rectangles are constrained in the first dimension
@@ -133,8 +142,12 @@ class Instance : public std::deque<RDimensions> {
    * @return the minimum sizeo f the second dimension.
    */
 
-  URational minDimStacked(const URational& nMax,
-			  const DimsFunctor* pDims) const;
+  URational minDim23Stacked(const URational& nMax,
+			    const DimsFunctor* pDims) const;
+  URational minDim2Stacked(const URational& nMax,
+			   const DimsFunctor* pDims) const;
+  URational minDim3Stacked(const URational& nMax,
+			   const DimsFunctor* pDims) const;
 
   /**
    * Given that all rectangles are constrained in the first dimension
@@ -157,9 +170,15 @@ class Instance : public std::deque<RDimensions> {
    * greater than this number by some small value epsilon.
    */
 
-  URational minDimStacked2(const URational& nMax,
-			   const DimsFunctor* pDims,
-			   bool& bOpenInterval) const;
+  URational minDim23Stacked2(const URational& nMax,
+			     const DimsFunctor* pDims,
+			     bool& bOpenInterval) const;
+  URational minDim2Stacked2(const URational& nMax,
+			    const DimsFunctor* pDims,
+			    bool& bOpenInterval) const;
+  URational minDim3Stacked2(const URational& nMax,
+			    const DimsFunctor* pDims,
+			    bool& bOpenInterval) const;
 
   /**
    * For packers that can only handle integral descriptions, this
