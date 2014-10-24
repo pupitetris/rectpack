@@ -17,20 +17,30 @@
  * along with rectpack. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LESSRATIOHW_H
-#define LESSRATIOHW_H
+#include "Dimensions.h"
+#include "LessRatioHLW.h"
+#include "RDimensions.h"
 
-class Dimensions;
-class RDimensions;
+LessRatioHLW::LessRatioHLW() {
+}
 
-class LessRatioHW {
- public:
-  LessRatioHW();
-  ~LessRatioHW();
-  bool operator()(const Dimensions& d1,
-		  const Dimensions& d2) const;
-  bool operator()(const RDimensions& d1,
-		  const RDimensions& d2) const;
-};
+LessRatioHLW::~LessRatioHLW() {
+}
 
-#endif // LESSRATIOHW_H
+bool LessRatioHLW::operator()(const Dimensions& d1,
+			     const Dimensions& d2) const {
+  if(d1.ratioH() != d2.ratioH())
+    return(d1.ratioH() < d2.ratioH());
+  if(d1.ratioL() != d2.ratioL())
+    return(d1.ratioL() < d2.ratioL());
+  return(d1.ratioW() < d2.ratioW());
+}
+
+bool LessRatioHLW::operator()(const RDimensions& d1,
+			     const RDimensions& d2) const {
+  if(d1.ratioH() != d2.ratioH())
+    return(d1.ratioH() < d2.ratioH());
+  if(d1.ratioL() != d2.ratioL())
+    return(d1.ratioL() < d2.ratioL());
+  return(d1.ratioW() < d2.ratioW());
+}

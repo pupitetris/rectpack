@@ -17,20 +17,20 @@
  * along with rectpack. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LESSRATIOWH_H
-#define LESSRATIOWH_H
+#ifndef LESSRATIOWHL_H
+#define LESSRATIOWHL_H
 
 class Dimensions;
 class RDimensions;
 
-class LessRatioWH {
+class LessRatioWHL {
  public:
-  LessRatioWH();
-  ~LessRatioWH();
+  LessRatioWHL();
+  ~LessRatioWHL();
   bool operator()(const Dimensions& d1,
 		  const Dimensions& d2) const;
   bool operator()(const RDimensions& d1,
 		  const RDimensions& d2) const;
 };
 
-#endif // LESSRATIOWH_H
+#endif // LESSRATIOWHL_H

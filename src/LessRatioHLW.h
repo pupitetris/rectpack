@@ -17,22 +17,20 @@
  * along with rectpack. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Dimensions.h"
-#include "LessRatioWH.h"
-#include "RDimensions.h"
+#ifndef LESSRATIOHLW_H
+#define LESSRATIOHLW_H
 
-LessRatioWH::LessRatioWH() {
-}
+class Dimensions;
+class RDimensions;
 
-LessRatioWH::~LessRatioWH() {
-}
+class LessRatioHLW {
+ public:
+  LessRatioHLW();
+  ~LessRatioHLW();
+  bool operator()(const Dimensions& d1,
+		  const Dimensions& d2) const;
+  bool operator()(const RDimensions& d1,
+		  const RDimensions& d2) const;
+};
 
-bool LessRatioWH::operator()(const Dimensions& d1,
-			     const Dimensions& d2) const {
-  return(d1.ratiowh() < d2.ratiowh());
-}
-
-bool LessRatioWH::operator()(const RDimensions& d1,
-			     const RDimensions& d2) const {
-  return(d1.ratiowh() < d2.ratiowh());
-}
+#endif // LESSRATIOHLW_H

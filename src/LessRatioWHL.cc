@@ -18,21 +18,29 @@
  */
 
 #include "Dimensions.h"
-#include "LessRatioHW.h"
+#include "LessRatioWHL.h"
 #include "RDimensions.h"
 
-LessRatioHW::LessRatioHW() {
+LessRatioWHL::LessRatioWHL() {
 }
 
-LessRatioHW::~LessRatioHW() {
+LessRatioWHL::~LessRatioWHL() {
 }
 
-bool LessRatioHW::operator()(const Dimensions& d1,
+bool LessRatioWHL::operator()(const Dimensions& d1,
 			     const Dimensions& d2) const {
-  return(d1.ratiohw() < d2.ratiohw());
+  if(d1.ratioW() != d2.ratioW())
+    return(d1.ratioW() < d2.ratioW());
+  if(d1.ratioH() != d2.ratioH())
+    return(d1.ratioH() < d2.ratioH());
+  return(d1.ratioL() < d2.ratioL());
 }
 
-bool LessRatioHW::operator()(const RDimensions& d1,
+bool LessRatioWHL::operator()(const RDimensions& d1,
 			     const RDimensions& d2) const {
-  return(d1.ratiohw() < d2.ratiohw());
+  if(d1.ratioW() != d2.ratioW())
+    return(d1.ratioW() < d2.ratioW());
+  if(d1.ratioH() != d2.ratioH())
+    return(d1.ratioH() < d2.ratioH());
+  return(d1.ratioL() < d2.ratioL());
 }
