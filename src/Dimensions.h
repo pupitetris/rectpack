@@ -59,6 +59,7 @@ class Dimensions {
   UInt m_nLength;
   UInt m_nMinDim;
   UInt m_nArea;
+  DimsFunctor *m_pRotation; // Represents the current rotation of the rectangle.
 };
 
 std::ostream& operator<<(std::ostream& os, const Dimensions& d);
