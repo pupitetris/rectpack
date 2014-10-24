@@ -52,8 +52,9 @@ class Dimensions {
   bool rotatedEqual(const Dimensions& d) const;
   void rotate();
   void setArea();
-  float ratiowh() const;
-  float ratiohw() const;
+  float ratioW() const;
+  float ratioH() const;
+  float ratioL() const;
   UInt m_nWidth;
   UInt m_nHeight;
   UInt m_nLength;

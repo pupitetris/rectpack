@@ -181,14 +181,14 @@ void Dimensions::rotate() {
   m_pRotation = m_pRotation->rotate ();
 }
 
-float Dimensions::ratiow() const {
+float Dimensions::ratioW() const {
   return(m_nWidth / sqrt((float) (m_nHeight * m_nHeight + m_nLength * m_nLength)));
 }
 
-float Dimensions::ratioh() const {
+float Dimensions::ratioH() const {
   return(m_nHeight / sqrt((float) (m_nWidth * m_nWidth + m_nLength * m_nLength)));
 }
 
-float Dimensions::ratiol() const {
+float Dimensions::ratioL() const {
   return(m_nLength / sqrt((float) (m_nHeight * m_nHeight + m_nWidth * m_nWidth)));
 }
