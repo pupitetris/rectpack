@@ -70,9 +70,6 @@ class DimsFunctor {
   // Rotator is the functor that transforms dimensions back to the identity.
   virtual DimsFunctor* rotator() const = 0;
 
-  // The functor that delivers dimensions shifted to the left relative to this one.
-  virtual DimsFunctor* shift() const = 0;
-
   virtual bool isRotated();
 
   virtual DimsFunctor* clone() const = 0;
