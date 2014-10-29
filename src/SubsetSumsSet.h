@@ -31,7 +31,8 @@ class SubsetSumsSet : public std::vector<SubsetSums> {
   
   enum Orientation {
     WIDTH,
-    HEIGHT
+    HEIGHT,
+    LENGTH
   };
 
   SubsetSumsSet();

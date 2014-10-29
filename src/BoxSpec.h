@@ -55,6 +55,7 @@ class BoxSpec {
   void clear();
   URational m_nWidth;
   URational m_nHeight;
+  URational m_nLength;
   void print() const;
 };
 

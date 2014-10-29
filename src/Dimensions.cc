@@ -20,7 +20,9 @@
 #include "Dimensions.h"
 #include "Component.h"
 #include "RDimensions.h"
+#include "WidthHeightLength.h"
 #include <limits>
+#include <cmath>
 
 Dimensions::Dimensions() :
   m_nWidth(0),
@@ -43,17 +45,17 @@ Dimensions::Dimensions(const Dimensions& d) :
 Dimensions::Dimensions(const RDimensions& d) :
   m_nWidth(d.m_nWidth.get_ui()),
   m_nHeight(d.m_nHeight.get_ui()),
-  m_nHeight(d.m_nLength.get_ui()),
+  m_nLength(d.m_nLength.get_ui()),
   m_nMinDim(d.m_nMinDim.get_ui()),
   m_nArea(d.m_nArea.get_ui()),
   m_pRotation(d.m_pRotation) {
 }
 
-void Dimensions::initialize(UInt nWidth, UInt nHeight) {
+void Dimensions::initialize(UInt nWidth, UInt nHeight, UInt nLength) {
   m_nWidth = nWidth;
   m_nHeight = nHeight;
   m_nLength = nLength;
-  m_nMinDim = std::min(nWidth, nHeight, nLength);
+  m_nMinDim = std::min(nWidth, std::min(nHeight, nLength));
   m_nArea = nWidth * nHeight * nLength;
   m_pRotation = NULL;
 }
@@ -68,11 +70,11 @@ const Dimensions& Dimensions::operator=(const Dimensions& d) {
   return(*this);
 }
 
-Dimensions::Dimensions(UInt nWidth, UInt nHeight) :
+Dimensions::Dimensions(UInt nWidth, UInt nHeight, UInt nLength) :
   m_nWidth(nWidth),
   m_nHeight(nHeight),
   m_nLength(nLength),
-  m_nMinDim(std::min(m_nWidth, m_nHeight, m_nLength)),
+  m_nMinDim(std::min(m_nWidth, std::min(m_nHeight, m_nLength))),
   m_nArea(nWidth * nHeight * nLength),
   m_pRotation(NULL) {
 }
@@ -82,7 +84,7 @@ Dimensions::Dimensions(const Component* c) :
   m_nHeight(c->m_Dims.m_nHeight),
   m_nLength(c->m_Dims.m_nLength),
   m_nMinDim(c->m_Dims.m_nMinDim),
-  m_nArea(c->m_Dims.m_nArea),,
+  m_nArea(c->m_Dims.m_nArea),
   m_pRotation(NULL) {
 }
 
@@ -133,10 +135,10 @@ bool Dimensions::operator!=(const Dimensions& d) const {
 
 void Dimensions::setArea() {
   m_nArea = m_nWidth * m_nHeight * m_nLength;
-  m_nMinDim = std::min(m_nWidth, m_nHeight, m_nLength);
+  m_nMinDim = std::min(m_nWidth, std::min(m_nHeight, m_nLength));
 }
 
-bool Dimensions::canFit(int nWidth, int nHeight) const {
+bool Dimensions::canFit(int nWidth, int nHeight, int nLength) const {
   return((int) m_nWidth <= nWidth && (int) m_nHeight <= nHeight && (int) m_nLength <= nLength);
 }
 

@@ -21,6 +21,7 @@
 #include "Rectangle.h"
 #include <algorithm>
 #include <sstream>
+#include <cmath>
 
 BoxDimensions::BoxDimensions() {
 }
@@ -52,21 +53,23 @@ void BoxDimensions::initializeL(const UInt& l) {
 bool BoxDimensions::operator<(const BoxDimensions& rhs) const {
   if(m_nArea != rhs.m_nArea)
     return(m_nArea < rhs.m_nArea);
-  else if(m_nWidth != rhs.m_nWidth)
+  if(m_nWidth != rhs.m_nWidth)
     return(m_nWidth < rhs.m_nWidth);
-  else if(m_nHeight != rhs.m_nHeight)
+  if(m_nHeight != rhs.m_nHeight)
     return(m_nHeight < rhs.m_nHeight);
-  return(m_nLength < rhs.m_nLength)
+
+  return(m_nLength < rhs.m_nLength);
 }
 
 bool BoxDimensions::operator>(const BoxDimensions& rhs) const {
   if(m_nArea != rhs.m_nArea)
     return(m_nArea > rhs.m_nArea);
-  else if(m_nWidth != rhs.m_nWidth)
+  if(m_nWidth != rhs.m_nWidth)
     return(m_nWidth > rhs.m_nWidth);
-  else if(m_nHeight != rhs.m_nHeight)
+  if(m_nHeight != rhs.m_nHeight)
     return(m_nHeight > rhs.m_nHeight);
-  return(m_nLength > rhs.m_nLength)
+
+  return(m_nLength > rhs.m_nLength);
 }
 
 URational BoxDimensions::ratioW() const {

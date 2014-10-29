@@ -118,14 +118,14 @@ class Instance : public std::deque<RDimensions> {
    */
 
   // Port where the "other" dimension is represented by both 2 and 3
-  URational minDimPairs23(const URational& nMax,
+  URational minDim23Pairs(const URational& nMax,
 			  const DimsFunctor* pDims) const;
 
   // Port where we define which dimension is going to be the "other" (either 2 or 3)
-  URational minDimPairs2(const URational& nMax,
+  URational minDim2Pairs(const URational& nMax,
 			 const DimsFunctor* pDims) const;
 
-  URational minDimPairs3(const URational& nMax,
+  URational minDim3Pairs(const URational& nMax,
 			 const DimsFunctor* pDims) const;
 
   /**

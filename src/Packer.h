@@ -109,6 +109,7 @@ class Packer {
   TimeSpec m_Time;
   TimeSpec m_XTime;
   TimeSpec m_YTime;
+  TimeSpec m_ZTime;
 
   /**
    * CuSP solutions.

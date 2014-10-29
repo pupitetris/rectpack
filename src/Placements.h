@@ -42,6 +42,7 @@ class Placements : public std::vector<Placement> {
   void print() const;
   bool verify() const;
   void rotate();
+  void rotateReset();
   RatDims m_Box;
 
  private:

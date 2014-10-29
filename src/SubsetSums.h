@@ -42,6 +42,8 @@ class SubsetSums : public std::map<UInt, MutexMap> {
 		   RectArray::const_iterator iEnd);
   void initializeH(RectArray::const_iterator iBegin,
 		   RectArray::const_iterator iEnd);
+  void initializeL(RectArray::const_iterator iBegin,
+		   RectArray::const_iterator iEnd);
   UInt m_nEpsilon;
 
  private:

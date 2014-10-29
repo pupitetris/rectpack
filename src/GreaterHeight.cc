@@ -34,6 +34,7 @@ bool GreaterHeight::operator()(const Rectangle* r1,
     return(r1->m_nHeight > r2->m_nHeight);
   if(r1->m_nLength != r2->m_nLength)
     return(r1->m_nLength > r2->m_nLength);
+
   return(r1->m_nWidth > r2->m_nWidth);
 }
 
@@ -43,6 +44,7 @@ bool GreaterHeight::operator()(const Dimensions& d1,
     return(d1.m_nHeight > d2.m_nHeight);
   if(d1.m_nLength != d2.m_nLength)
     return(d1.m_nLength > d2.m_nLength);
+
   return(d1.m_nWidth > d2.m_nWidth);
 }
 
@@ -52,5 +54,6 @@ bool GreaterHeight::operator()(const RDimensions& d1,
     return(d1.m_nHeight > d2.m_nHeight);
   if(d1.m_nLength != d2.m_nLength)
     return(d1.m_nLength > d2.m_nLength);
+
   return(d1.m_nWidth > d2.m_nWidth);
 }

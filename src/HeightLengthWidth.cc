@@ -19,8 +19,9 @@
 
 #include "HeightLengthWidth.h"
 #include "LengthHeightWidth.h"
-#include "HeightWidthLength.h"
+#include "LengthWidthHeight.h"
 #include "RDimensions.h"
+#include "Dimensions.h"
 #include "Rectangle.h"
 
 HeightLengthWidth* HeightLengthWidth::singleton = NULL;

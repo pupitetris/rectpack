@@ -24,9 +24,6 @@
 #include "Integer.h"
 #include "Rational.h"
 
-class RDimensions;
-class Rectangle;
-
 class LengthWidthHeight : public DimsFunctor {
  public:
   static DimsFunctor* get();
@@ -58,6 +55,7 @@ class LengthWidthHeight : public DimsFunctor {
 
   virtual DimsFunctor* rotate() const;
   virtual DimsFunctor* rotator() const;
+  virtual DimsFunctor* shift() const;
   virtual DimsFunctor* clone() const;
 };
 

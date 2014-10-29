@@ -20,6 +20,7 @@
 #include "WidthLengthHeight.h"
 #include "WidthHeightLength.h"
 #include "RDimensions.h"
+#include "Dimensions.h"
 #include "Rectangle.h"
 
 WidthHeightLength* WidthHeightLength::singleton = NULL;

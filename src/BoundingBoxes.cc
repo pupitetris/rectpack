@@ -63,9 +63,19 @@ void BoundingBoxes::initialize(const Parameters* pParams) {
   if(pParams->m_s0.find_first_of('l') < pParams->m_s0.size())
     lowerBoundSolution();
   m_nMaxArea = std::min(pParams->m_vInstance.m_nMax.m_nHeight.get_ui() *
-			pParams->m_vInstance.m_nStacked.m_nWidth.get_ui(),
+			pParams->m_vInstance.m_nStacked.m_nWidth.get_ui() *
+			pParams->m_vInstance.m_nStacked.m_nLength.get_ui(),
 			pParams->m_vInstance.m_nMax.m_nWidth.get_ui() *
-			pParams->m_vInstance.m_nStacked.m_nHeight.get_ui());
+			pParams->m_vInstance.m_nStacked.m_nHeight.get_ui() *
+			pParams->m_vInstance.m_nStacked.m_nLength.get_ui());
+  m_nMaxArea = std::min(m_nMaxArea,
+			pParams->m_vInstance.m_nMax.m_nHeight.get_ui() *
+			pParams->m_vInstance.m_nStacked.m_nWidth.get_ui() *
+			pParams->m_vInstance.m_nMax.m_nLength.get_ui());
+  m_nMaxArea = std::min(m_nMaxArea,
+			pParams->m_vInstance.m_nMax.m_nWidth.get_ui() *
+			pParams->m_vInstance.m_nStacked.m_nHeight.get_ui() *
+			pParams->m_vInstance.m_nMax.m_nLength.get_ui());
 
   if(!pParams->m_bSingleRun) {
 
@@ -81,6 +91,8 @@ void BoundingBoxes::initialize(const Parameters* pParams) {
 			    m_pPacker->m_vOriginalRects.end());
       m_Widths.initializeW(m_pPacker->m_vOriginalRects.begin(),
 			   m_pPacker->m_vOriginalRects.end());
+      m_Lengths.initializeL(m_pPacker->m_vOriginalRects.begin(),
+			    m_pPacker->m_vOriginalRects.end());
     }
     m_iWidth = m_Widths.lower_bound(m_pParams->m_vInstance.m_nMaxMin.m_nWidth.get_ui());
 
@@ -97,6 +109,8 @@ void BoundingBoxes::initialize(const Parameters* pParams) {
 			   SubsetSumsSet::WIDTH);
       m_vHeights.initialize(&m_pPacker->m_vOriginalRects, &m_Heights,
 			    SubsetSumsSet::HEIGHT);
+      m_vLengths.initialize(&m_pPacker->m_vOriginalRects, &m_Lengths,
+			    SubsetSumsSet::LENGTH);
     }
     
     /**
@@ -134,6 +148,7 @@ bool BoundingBoxes::run() {
   m_TotalTime.clear();
   m_TotalXTime.clear();
   m_TotalYTime.clear();
+  m_TotalZTime.clear();
 
   if(m_pParams->m_bSingleRun)
     return(singleRun());
@@ -158,6 +173,7 @@ bool BoundingBoxes::run() {
       if(!m_pParams->m_bQuiet && m_pParams->m_Log.empty())
 	std::cout << "Skipping " << m_pParams->unscale(b.m_Box.m_nWidth)
 		  << " X " << m_pParams->unscale(b.m_Box.m_nHeight)
+		  << " X " << m_pParams->unscale(b.m_Box.m_nLength)
 		  << " = " << m_pParams->unscale2(b.m_Box.m_nArea)
 		  << std::endl;
       ++nIthBox;
@@ -199,6 +215,7 @@ bool BoundingBoxes::run() {
       m_pPacker->printNodes();
 
     m_TotalTime += m_pPacker->m_Time;
+    m_TotalZTime += m_pPacker->m_ZTime;
     m_TotalYTime += m_pPacker->m_YTime;
     m_TotalXTime += m_pPacker->m_XTime;
     
@@ -219,12 +236,12 @@ bool BoundingBoxes::run() {
 	Placements v;
 	m_pPacker->get(v);
 	if(m_pPacker->m_bInstanceRotated)
-	  v.rotate();
+	  v.rotateReset();
 	if(!v.verify())
 	  std::cout << "  Error: Constraints not satisfied." << std::endl;
 	ag.draw(m_pParams, v);
 	ag.print();
-	std::cout << "  Rectangles were placed in these (x,y) locations:"
+	std::cout << "  Rectangles were placed in these (x,y,z) locations:"
 		  << std::endl;
 	v *= m_pParams->m_vInstance.m_nScale;
 	v.print();
@@ -256,6 +273,7 @@ void BoundingBoxes::printAttempt(const BoxDimensions& b) const {
   if(!m_pParams->m_bQuiet) {
     std::cout << "Trying " << m_pParams->unscale(b.m_nWidth)
 	      << " X " << m_pParams->unscale(b.m_nHeight)
+	      << " X " << m_pParams->unscale(b.m_nLength)
 	      << " = " << m_pParams->unscale2(b.m_nArea)
 	      << ", Empty = ";
     URational nEmpty(b.m_nArea);
@@ -269,11 +287,13 @@ void BoundingBoxes::printAttempt(const BoxDimensions& b) const {
 bool BoundingBoxes::singleRun() {
   HeapBox hb;
   hb.m_Box.initialize(m_pParams->m_Box.m_nWidth.get_ui(),
-		      m_pParams->m_Box.m_nHeight.get_ui());
+		      m_pParams->m_Box.m_nHeight.get_ui(),
+		      m_pParams->m_Box.m_nLength.get_ui());
   printAttempt(hb.m_Box);
   bool bResult = m_pPacker->pack(hb);
   if(bQuit) return(false);
   m_TotalTime += m_pPacker->m_Time;
+  m_TotalZTime += m_pPacker->m_ZTime;
   m_TotalYTime += m_pPacker->m_YTime;
   m_TotalXTime += m_pPacker->m_XTime;
   m_Total.accumulate(m_pPacker->m_Nodes);
@@ -282,12 +302,12 @@ bool BoundingBoxes::singleRun() {
     AsciiGrid ag;
     m_pPacker->get(v);
     if(m_pPacker->m_bInstanceRotated)
-      v.rotate();
+      v.rotateReset();
     if(!v.verify())
       std::cout << "  Error: Constraints not satisfied." << std::endl;
     ag.draw(m_pParams, v);
     ag.print();
-    std::cout << "  Rectangles were placed in these (x,y) locations:"
+    std::cout << "  Rectangles were placed in these (x,y,z) locations:"
 	      << std::endl;
     v *= m_pParams->m_vInstance.m_nScale;
     v.print();
@@ -304,6 +324,7 @@ bool BoundingBoxes::getNext(HeapBox& b) {
   return(true);
 }
 
+// pupitetris TODO: port this.
 bool BoundingBoxes::pushNext(const HeapBox& hb) {
 
   HeapBox b(hb);
@@ -363,6 +384,7 @@ bool BoundingBoxes::pushNext(const HeapBox& hb) {
   return(true);
 }
 
+// pupitetris TODO: port this.
 bool BoundingBoxes::pushNextInt(const HeapBox& hb) {
 
   HeapBox b(hb);
@@ -402,6 +424,7 @@ UInt BoundingBoxes::attempts() const {
   return((UInt) m_sAttempts.size());
 }
 
+// pupitetris TODO: port this.
 void BoundingBoxes::enqueueNewWidths(UInt nMinArea) {
 
   /**
@@ -417,7 +440,7 @@ void BoundingBoxes::enqueueNewWidths(UInt nMinArea) {
   
   HeapBox hb;
   hb.m_nConflictLearningIndex = m_pParams->m_vInstance.size() - 1;
-  WidthHeightLength whl;
+  DimsFunctor *whl = WidthHeightLength::get();
   for(; m_iWidth != m_Widths.end(); ++m_iWidth) {
 
     /**
@@ -441,8 +464,8 @@ void BoundingBoxes::enqueueNewWidths(UInt nMinArea) {
     nHeight = nMinArea / m_iWidth->first;
     if(nMinArea % m_iWidth->first) ++nHeight;
     nHeight = std::max(nHeight, m_pParams->m_vInstance.m_nMaxMin.m_nHeight.roundUp());
-    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimPairs(m_iWidth->first, &whl).roundUp());
-    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimStacked(m_iWidth->first, &whl).roundUp());
+    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDim2Pairs(m_iWidth->first, whl).roundUp());
+    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDim2Stacked(m_iWidth->first, whl).roundUp());
     if(m_pParams->m_vInstance.m_bDiagonalSymmetry)
       nHeight = std::max(nHeight, m_iWidth->first);
     hb.m_iHeight = m_Heights.lower_bound(nHeight);
@@ -456,7 +479,7 @@ void BoundingBoxes::enqueueNewWidths(UInt nMinArea) {
 
     bool bOpenInterval(false);
     URational nHeight2 =
-      m_pParams->m_vInstance.minDimStacked2(m_iWidth->first, &whl, bOpenInterval);
+      m_pParams->m_vInstance.minDim2Stacked2(m_iWidth->first, whl, bOpenInterval);
     if(bOpenInterval) 
       while(nHeight2 >= (URational) hb.m_iHeight->first) ++hb.m_iHeight;
     else
@@ -537,6 +560,7 @@ void BoundingBoxes::enqueueNewWidths(UInt nMinArea) {
   }
 }
 
+// pupitetris TODO: port this.
 void BoundingBoxes::enqueueNewIntWidths(UInt nMinArea) {
 
   /**
@@ -552,7 +576,7 @@ void BoundingBoxes::enqueueNewIntWidths(UInt nMinArea) {
   
   HeapBox hb;
   hb.m_nConflictLearningIndex = m_pParams->m_vInstance.size() - 1;
-  WidthHeightLength whl;
+  DimsFunctor *whl = WidthHeightLength::get();
   for(; m_nWidth <= m_pParams->m_vInstance.m_nStacked.m_nWidth.get_ui();
       ++m_nWidth) {
 
@@ -577,8 +601,8 @@ void BoundingBoxes::enqueueNewIntWidths(UInt nMinArea) {
     nHeight = nMinArea / m_nWidth;
     if(nMinArea % m_nWidth) ++nHeight;
     nHeight = std::max(nHeight, m_pParams->m_vInstance.m_nMaxMin.m_nHeight.roundUp());
-    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimPairs(m_nWidth, &whl).roundUp());
-    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDimStacked(m_nWidth, &whl).roundUp());
+    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDim2Pairs(m_nWidth, whl).roundUp());
+    nHeight = std::max(nHeight, m_pParams->m_vInstance.minDim2Stacked(m_nWidth, whl).roundUp());
     if(m_pParams->m_vInstance.m_bDiagonalSymmetry)
       nHeight = std::max(nHeight, m_nWidth);
     hb.m_Box.m_nHeight = nHeight;
@@ -592,7 +616,7 @@ void BoundingBoxes::enqueueNewIntWidths(UInt nMinArea) {
 
     bool bOpenInterval(false);
     URational nHeight2 =
-      m_pParams->m_vInstance.minDimStacked2(m_nWidth, &whl, bOpenInterval);
+      m_pParams->m_vInstance.minDim2Stacked2(m_nWidth, whl, bOpenInterval);
     if(bOpenInterval) 
       hb.m_Box.m_nHeight = std::max(hb.m_Box.m_nHeight, nHeight2.get_ui() + 1);
     else
@@ -611,7 +635,7 @@ void BoundingBoxes::enqueueNewIntWidths(UInt nMinArea) {
      * This box is important, so we insert it into our priority queue.
      */
 
-    hb.m_Box.initialize(m_nWidth, hb.m_Box.m_nHeight);
+    hb.m_Box.initialize(m_nWidth, hb.m_Box.m_nHeight, m_nLength);
     m_vBoxes.push(hb);
   }
 }
@@ -624,7 +648,7 @@ void BoundingBoxes::lowerBoundSolution() {
    */
 
   Instance v = m_pParams->m_vInstance;
-  m_nMaxArea = v.m_nStacked.m_nWidth.get_ui() * v.m_nStacked.m_nHeight.get_ui();
+  m_nMaxArea = v.m_nStacked.m_nWidth.get_ui() * v.m_nStacked.m_nHeight.get_ui() * v.m_nStacked.m_nLength.get_ui();
   v[v.size() - 2] = v[v.size() - 1];
   v[v.size() - 3] = v[v.size() - 1];
 

@@ -17,10 +17,11 @@
  * along with rectpack. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "HeightLengthWidth.h"
-#include "WidthLengthHeight.h"
 #include "HeightWidthLength.h"
+#include "WidthHeightLength.h"
+#include "WidthLengthHeight.h"
 #include "RDimensions.h"
+#include "Dimensions.h"
 #include "Rectangle.h"
 
 HeightWidthLength* HeightWidthLength::singleton = NULL;
@@ -110,7 +111,7 @@ const URational& HeightWidthLength::d3(const RDimensions& r) const {
 }
 
 DimsFunctor* HeightWidthLength::rotate() const {
-  return(WidthHeightLenght::get());
+  return(WidthHeightLength::get());
 }
 
 DimsFunctor* HeightWidthLength::rotator() const {

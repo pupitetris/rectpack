@@ -202,7 +202,7 @@ void Instance::parseInstance(std::deque<UInt>& v,
 
   case 1:
     for(UInt i = 0; i < v.size(); ++i)
-      push_back(RDimensions(v[i], v[i]));
+      push_back(RDimensions(v[i], v[i], v[i]));
     for(UInt i = 0; i < vLower.size(); ++i)
       for(UInt j = vLower[i]; j <= vUpper[i]; ++j)
 	push_back(RDimensions(j, j, j));
@@ -256,18 +256,18 @@ void Instance::parseInstance(std::deque<UInt>& v,
 
   case 6:
     for(UInt i = 0; i < v.size(); ++i) {
-      push_back(RDimensions(v[i] * n + 1, n * (n + 1 - v[i]) + 1), v[i] * n + 1);
+      push_back(RDimensions(v[i] * n + 1, n * (n + 1 - v[i]) + 1, v[i] * n + 1));
       if (v[i] * n + 1 != n * (n + 1 - v[i]) + 1) {
 	push_back(RDimensions(v[i] * n + 1, v[i] * n + 1, n * (n + 1 - v[i]) + 1));
-	push_back(RDimensions(n * (n + 1 - v[i]) + 1), v[i] * n + 1, v[i] * n + 1);
+	push_back(RDimensions(n * (n + 1 - v[i]) + 1, v[i] * n + 1, v[i] * n + 1));
       }
     }
     for(UInt i = 0; i < vLower.size(); ++i)
       for(UInt j = vLower[i]; j <= vUpper[i]; ++j) {
-	push_back(RDimensions(j * n + 1, n * (n + 1 - j) + 1), j * n + 1);
+	push_back(RDimensions(j * n + 1, n * (n + 1 - j) + 1, j * n + 1));
 	if (j * n + 1 != n * (n + 1 - j) + 1) {
 	  push_back(RDimensions(j * n + 1, j * n + 1, n * (n + 1 - j) + 1));
-	  push_back(RDimensions(n * (n + 1 - j) + 1), j * n + 1, j * n + 1);
+	  push_back(RDimensions(n * (n + 1 - j) + 1, j * n + 1, j * n + 1));
 	}
       }
     break;
@@ -568,7 +568,7 @@ void Instance::sort(int nOrdering, bool bYSmallerThanX) {
   else if(nOrdering == 6)
     sortIncreasingWRatio();
   else if(nOrdering == 7)
-    sortIncreasingHWRatio();
+    sortIncreasingHRatio();
   else if(nOrdering == 8) {
     if(m_bUnoriented)
       sortDecreasingArea();
@@ -653,7 +653,7 @@ bool Instance::square(const RDimensions& r) const {
   return(r.m_nWidth == r.m_nHeight && r.m_nWidth == r.m_nLength);
 }
 
-URational Instance::minDimPairs23(const URational& nMax,
+URational Instance::minDim23Pairs(const URational& nMax,
 				  const DimsFunctor* pDims) const {
   if(empty()) return(URational((UInt) 0));
   if(size() == 1)
@@ -669,7 +669,7 @@ URational Instance::minDimPairs23(const URational& nMax,
 	URational n((UInt) 0);
 	for(const_iterator j = i + 1; j != end(); ++j) {
 
-	  DimsFunctor *pDims2 = pDims;
+	  const DimsFunctor *pDims2 = pDims;
 	  URational p(std::min (pDims->d2(m_nStacked), pDims->d3(m_nStacked)));
 	  for (Int rj = 0; rj < NUM_ROTATIONS; rj++) {
 	    if(pDims2->d1(*j) <= nMax)
@@ -693,10 +693,11 @@ URational Instance::minDimPairs23(const URational& nMax,
 	break;
       pDims = pDims->rotate ();
     }
+  }
   return(nMin);
 }
 
-URational Instance::minDimPairs2(const URational& nMax,
+URational Instance::minDim2Pairs(const URational& nMax,
 				 const DimsFunctor* pDims) const {
   if(empty()) return(URational((UInt) 0));
   if(size() == 1)
@@ -712,7 +713,7 @@ URational Instance::minDimPairs2(const URational& nMax,
 	URational n((UInt) 0);
 	for(const_iterator j = i + 1; j != end(); ++j) {
 
-	  DimsFunctor *pDims2 = pDims;
+	  const DimsFunctor *pDims2 = pDims;
 	  URational p(pDims->d2(m_nStacked));
 	  for (Int rj = 0; rj < NUM_ROTATIONS; rj++) {
 	    if(pDims2->d1(*j) <= nMax)
@@ -736,10 +737,11 @@ URational Instance::minDimPairs2(const URational& nMax,
 	break;
       pDims = pDims->rotate ();
     }
+  }
   return(nMin);
 }
 
-URational Instance::minDimPairs3(const URational& nMax,
+URational Instance::minDim3Pairs(const URational& nMax,
 				 const DimsFunctor* pDims) const {
   if(empty()) return(URational((UInt) 0));
   if(size() == 1)
@@ -755,7 +757,7 @@ URational Instance::minDimPairs3(const URational& nMax,
 	URational n((UInt) 0);
 	for(const_iterator j = i + 1; j != end(); ++j) {
 
-	  DimsFunctor *pDims2 = pDims;
+	  const DimsFunctor *pDims2 = pDims;
 	  URational p(pDims->d3(m_nStacked));
 	  for (Int rj = 0; rj < NUM_ROTATIONS; rj++) {
 	    if(pDims2->d1(*j) <= nMax)
@@ -779,6 +781,7 @@ URational Instance::minDimPairs3(const URational& nMax,
 	break;
       pDims = pDims->rotate ();
     }
+  }
   return(nMin);
 }
 

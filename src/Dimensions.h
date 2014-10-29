@@ -21,6 +21,7 @@
 #define DIMENSIONS_H
 
 #include "Integer.h"
+#include "DimsFunctor.h"
 #include <iostream>
 
 class Component;

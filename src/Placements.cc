@@ -257,3 +257,9 @@ void Placements::rotate() {
   for(iterator i = begin(); i != end(); ++i)
     i->rotate();
 }
+
+void Placements::rotate() {
+  m_Box.rotate();
+  for(iterator i = begin(); i != end(); ++i)
+    i->rotateReset();
+}

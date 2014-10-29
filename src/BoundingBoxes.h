@@ -61,6 +61,7 @@ class BoundingBoxes {
   TimeSpec m_TotalTime;
   TimeSpec m_TotalXTime;
   TimeSpec m_TotalYTime;
+  TimeSpec m_TotalZTime;
 
   /**
    * Represents all possible widths created by subset sums of all the
@@ -76,6 +77,8 @@ class BoundingBoxes {
 
   SubsetSums m_Heights;
 
+  SubsetSums m_Lengths;
+
   /**
    * These subset sums represent limited sets that are based on a
    * subset of the rectangles only. That is, for m_vWidths[i], we only
@@ -84,6 +87,7 @@ class BoundingBoxes {
 
   SubsetSumsSet m_vWidths;
   SubsetSumsSet m_vHeights;
+  SubsetSumsSet m_vLengths;
 
   bool m_bAllIntegralBoxes;
   bool m_bMutexChecking;
